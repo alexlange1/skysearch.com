@@ -9,8 +9,19 @@ import { Send, Lightbulb } from "lucide-react";
 import { mcpFlightSearch } from '@/services/mcpService';
 import { useToast } from "@/hooks/use-toast";
 
+// Add the Message interface with booking property
+interface Message {
+  type: string;
+  content: string;
+  flights?: any[];
+  booking?: {
+    stage?: string;
+    flight?: any;
+  };
+}
+
 const AIChat = () => {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     {
       type: 'ai',
       content: 'Hello! I\'m your AI travel assistant. How can I help you find flights today?'
@@ -27,7 +38,7 @@ const AIChat = () => {
     if (input.trim() === '') return;
 
     // Add user message
-    const userMessage = { type: 'user', content: input };
+    const userMessage: Message = { type: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
     
     // Clear input and set loading state
@@ -43,7 +54,7 @@ const AIChat = () => {
       setFlights(result.flights);
       
       // Create AI response with flight data
-      const aiMessage = { 
+      const aiMessage: Message = { 
         type: 'ai', 
         content: result.responseMessage,
         flights: result.flights
@@ -52,7 +63,7 @@ const AIChat = () => {
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error('Error searching flights:', error);
-      const errorMessage = { 
+      const errorMessage: Message = { 
         type: 'ai', 
         content: "I'm sorry, I encountered an error while searching for flights. Please try again with a different query."
       };
@@ -74,7 +85,7 @@ const AIChat = () => {
       });
       
       // Add an AI message to request passenger details
-      const bookingStartMessage = { 
+      const bookingStartMessage: Message = { 
         type: 'ai', 
         content: `Great choice! I'll help you book your ${flight.airline} flight from ${flight.departureAirport} to ${flight.arrivalAirport} on ${flight.departureTime}. First, I need some information.`,
         booking: { stage: 'passenger', flight }
@@ -84,7 +95,7 @@ const AIChat = () => {
       setIsLoading(false);
     } catch (error) {
       console.error('Error starting booking:', error);
-      const errorMessage = { 
+      const errorMessage: Message = { 
         type: 'ai', 
         content: "I'm sorry, I encountered an error while preparing your booking. Please try again."
       };
@@ -97,7 +108,7 @@ const AIChat = () => {
     setIsLoading(true);
     
     // Add user input as a message
-    const userMessage = { 
+    const userMessage: Message = { 
       type: 'user', 
       content: data 
     };
@@ -113,7 +124,7 @@ const AIChat = () => {
     // Process based on current stage
     setTimeout(() => {
       let nextStage = '';
-      let aiMessage = { type: 'ai', content: '' };
+      let aiMessage: Message = { type: 'ai', content: '' };
       
       switch(stage) {
         case 'passenger':
