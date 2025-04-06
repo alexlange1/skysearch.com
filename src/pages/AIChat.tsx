@@ -1,54 +1,103 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AIChatMessages from '@/components/AIChatMessages';
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send, Lightbulb } from "lucide-react";
+import { mcpFlightSearch } from '@/services/mcpService';
 
 const AIChat = () => {
   const [messages, setMessages] = useState([
     {
       type: 'ai',
-      content: 'Hello! I\'m your AI travel assistant. How can I help you plan your next flight?'
+      content: 'Hello! I\'m your AI travel assistant. How can I help you find flights today?'
     }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [flights, setFlights] = useState([]);
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (input.trim() === '') return;
 
     // Add user message
     const userMessage = { type: 'user', content: input };
-    setMessages([...messages, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     
     // Clear input and set loading state
+    const userQuery = input;
     setInput('');
     setIsLoading(true);
     
-    // Simulate AI response after delay
-    setTimeout(() => {
+    try {
+      // Call MCP service to search for flights
+      const result = await mcpFlightSearch(userQuery);
+      
+      // Save flights to state for potential booking
+      setFlights(result.flights);
+      
+      // Create AI response with flight data
       const aiMessage = { 
         type: 'ai', 
-        content: `I can help you with that flight query about "${input}". What specific details would you like to know?`
+        content: result.responseMessage,
+        flights: result.flights
       };
+      
       setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('Error searching flights:', error);
+      const errorMessage = { 
+        type: 'ai', 
+        content: "I'm sorry, I encountered an error while searching for flights. Please try again with a different query."
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
+  };
+
+  const handleBookFlight = async (flight) => {
+    setIsLoading(true);
+    
+    try {
+      // In a real implementation, this would call the bookFlight MCP function
+      // For now, we'll simulate a successful booking with a confirmation message
+      setTimeout(() => {
+        const bookingMessage = { 
+          type: 'ai', 
+          content: `Great choice! I've booked your ${flight.airline} flight from ${flight.departureAirport} to ${flight.arrivalAirport} on ${flight.departureTime}. Your confirmation number is ${Math.random().toString(36).substring(2, 10).toUpperCase()}.`
+        };
+        setMessages(prev => [...prev, bookingMessage]);
+        setIsLoading(false);
+      }, 1500);
+    } catch (error) {
+      console.error('Error booking flight:', error);
+      const errorMessage = { 
+        type: 'ai', 
+        content: "I'm sorry, I encountered an error while booking your flight. Please try again."
+      };
+      setMessages(prev => [...prev, errorMessage]);
+      setIsLoading(false);
+    }
   };
 
   const suggestedQueries = [
-    "Flights from New York to London",
-    "Find me a flight to Paris next week",
-    "One-way flight from San Francisco to Tokyo",
-    "What's the cheapest flight from Chicago to Miami?"
+    "Find flights from New York to London for tomorrow",
+    "I need a flight from Chicago to Miami next week",
+    "Show me flights from San Francisco to Tokyo",
+    "What's the cheapest flight from Seattle to Boston?"
   ];
 
   const handleSuggestedQuery = (query) => {
     setInput(query);
+  };
+
+  // Get a random placeholder from suggested queries
+  const getRandomPlaceholder = () => {
+    return suggestedQueries[Math.floor(Math.random() * suggestedQueries.length)];
   };
 
   return (
@@ -88,14 +137,18 @@ const AIChat = () => {
 
           {messages.length > 1 && (
             <div className="p-6 min-h-[400px] max-h-[600px] overflow-y-auto">
-              <AIChatMessages messages={messages} isLoading={isLoading} />
+              <AIChatMessages 
+                messages={messages} 
+                isLoading={isLoading} 
+                onBookFlight={handleBookFlight}
+              />
             </div>
           )}
           
           <div className="border-t p-4 bg-white sticky bottom-0">
             <form onSubmit={handleSendMessage} className="flex gap-2 items-end">
               <Textarea 
-                placeholder={suggestedQueries[Math.floor(Math.random() * suggestedQueries.length)]}
+                placeholder={getRandomPlaceholder()}
                 className="min-h-[60px] flex-1 resize-none border-gray-200 focus:border-blue-400"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
