@@ -1,4 +1,3 @@
-
 import { Flight } from "./flightService";
 
 // Interface for city to airport ID response
@@ -308,5 +307,3 @@ const flightsAutoComplete = async (query: string): Promise<AutoCompleteResult[]>
     }
   ];
 };
-
-// Update the App.tsx to add a link to the AI Chat
