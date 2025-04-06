@@ -68,10 +68,10 @@ const CarRental = () => {
         <h2 className="text-2xl font-bold mb-6">Popular Car Types</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { name: "Economy", price: "from $25/day", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
-            { name: "SUV", price: "from $45/day", image: "https://images.unsplash.com/photo-1465379944081-7f47de8d74ac?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
-            { name: "Luxury", price: "from $85/day", image: "https://images.unsplash.com/photo-1487887235947-a955ef187fcc?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
-            { name: "Van", price: "from $65/day", image: "https://images.unsplash.com/photo-1517022812141-23620dba5c23?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+            { name: "Economy", model: "Fiat Tipo", price: "from $25/day", image: "https://images.unsplash.com/photo-1621068793715-bc044b5a1cee?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+            { name: "SUV", model: "BMW X5", price: "from $45/day", image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+            { name: "Luxury", model: "Porsche 911", price: "from $85/day", image: "https://images.unsplash.com/photo-1580274455191-1c62238fa333?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+            { name: "Van", model: "Mercedes V Class", price: "from $65/day", image: "https://images.unsplash.com/photo-1543465077-db45d34b88a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
           ].map((car) => (
             <div key={car.name} className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
@@ -82,7 +82,7 @@ const CarRental = () => {
                 />
               </div>
               <div className="p-4">
-                <h3 className="font-bold text-lg">{car.name}</h3>
+                <h3 className="font-bold text-lg">{car.name} - {car.model}</h3>
                 <p className="text-sm text-gray-600 mt-1">{car.price}</p>
               </div>
             </div>

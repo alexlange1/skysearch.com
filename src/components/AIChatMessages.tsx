@@ -16,7 +16,7 @@ interface AIChatMessagesProps {
 
 const AIChatMessages: React.FC<AIChatMessagesProps> = ({ messages, isLoading }) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {messages.map((message, index) => (
         <div 
           key={index}
@@ -43,7 +43,7 @@ const AIChatMessages: React.FC<AIChatMessagesProps> = ({ messages, isLoading }) 
               className={cn(
                 "rounded-2xl py-3 px-4 shadow-sm", 
                 message.type === 'user' 
-                  ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-tr-sm" 
+                  ? "bg-blue-500 text-white rounded-tr-sm" 
                   : "bg-white text-gray-800 border border-gray-100 rounded-tl-sm"
               )}
             >
@@ -63,9 +63,9 @@ const AIChatMessages: React.FC<AIChatMessagesProps> = ({ messages, isLoading }) 
             </Avatar>
             <div className="bg-white rounded-2xl py-3 px-4 shadow-sm border border-gray-100 rounded-tl-sm">
               <div className="flex space-x-2">
-                <div className="h-2 w-2 bg-indigo-400 rounded-full animate-pulse"></div>
-                <div className="h-2 w-2 bg-indigo-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                <div className="h-2 w-2 bg-indigo-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse"></div>
+                <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
               </div>
             </div>
           </div>
