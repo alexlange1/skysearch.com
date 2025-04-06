@@ -4,6 +4,7 @@ import { Flight } from '@/services/flightService';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plane, Clock, Calendar } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface FlightResultsProps {
   flights: Flight[];
@@ -11,6 +12,8 @@ interface FlightResultsProps {
 }
 
 const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => {
+  const { toast } = useToast();
+
   if (isLoading) {
     return (
       <div className="w-full py-10 flex justify-center">
@@ -22,6 +25,70 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
   if (!flights.length) {
     return null;
   }
+
+  const handleBookFlight = async (flight: Flight) => {
+    // Extract airport codes from the full airport strings
+    const extractAirportCode = (airportString: string): string => {
+      const match = airportString.match(/^([A-Z]{3})/);
+      return match ? match[1] : '';
+    };
+
+    const departureCode = extractAirportCode(flight.departureAirport);
+    const arrivalCode = extractAirportCode(flight.arrivalAirport);
+
+    // Format departure and arrival times to ISO format required by API
+    // For demo purposes, we'll use today's date with the time from the flight
+    const formatTimeToISO = (timeString: string): string => {
+      const today = new Date().toISOString().split('T')[0];
+      const [time, period] = timeString.split(' ');
+      const [hourStr, minuteStr] = time.split(':');
+      
+      let hour = parseInt(hourStr, 10);
+      const minute = parseInt(minuteStr, 10);
+      
+      // Convert 12-hour format to 24-hour format
+      if (period === 'PM' && hour < 12) hour += 12;
+      if (period === 'AM' && hour === 12) hour = 0;
+      
+      return `${today}T${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
+    };
+
+    const bookingData = {
+      provider: "Travel Agent",
+      function: "bookFlight",
+      parameters: {
+        airline: flight.airline,
+        flight_number: flight.flightNumber,
+        from: departureCode,
+        to: arrivalCode,
+        departure_time: formatTimeToISO(flight.departureTime),
+        arrival_time: formatTimeToISO(flight.arrivalTime),
+        price: flight.price.toString(),
+        currency: "USD",
+        duration: flight.duration,
+        stops: flight.stops === 0 ? "Direct" : `${flight.stops} Stop${flight.stops > 1 ? 's' : ''}`
+      }
+    };
+
+    try {
+      console.log('Booking flight with data:', bookingData);
+      
+      // In a real implementation, this would be an API call
+      // For now we'll simulate a successful booking
+      toast({
+        title: "Flight booked successfully!",
+        description: `Your ${flight.airline} flight from ${departureCode} to ${arrivalCode} has been booked.`,
+        variant: "default",
+      });
+    } catch (error) {
+      console.error('Error booking flight:', error);
+      toast({
+        title: "Booking failed",
+        description: "There was an error booking your flight. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="w-full py-10 px-4 bg-white">
@@ -83,7 +150,10 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
                   
                   <div className="bg-blue-50 p-4 md:w-1/4 flex flex-col justify-center items-center border-l border-gray-200">
                     <div className="text-2xl font-bold text-blue-600">${flight.price}</div>
-                    <button className="mt-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors">
+                    <button 
+                      className="mt-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors"
+                      onClick={() => handleBookFlight(flight)}
+                    >
                       Select
                     </button>
                   </div>
