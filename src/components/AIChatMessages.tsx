@@ -49,13 +49,34 @@ const AIChatMessages: React.FC<AIChatMessagesProps> = ({
   onBookFlight,
   onBookingStageComplete
 }) => {
-  const [bookingInput, setBookingInput] = useState("");
+  // Create separate state for each input type
+  const [passengerInput, setPassengerInput] = useState("");
+  const [contactInput, setContactInput] = useState("");
+  const [paymentInput, setPaymentInput] = useState("");
   
   const handleBookingInput = (stage: string) => {
-    if (!bookingInput.trim()) return;
+    let inputValue = "";
     
-    onBookingStageComplete(stage, bookingInput);
-    setBookingInput("");
+    // Use the appropriate input based on stage
+    switch(stage) {
+      case 'passenger':
+        if (!passengerInput.trim()) return;
+        inputValue = passengerInput;
+        setPassengerInput("");
+        break;
+      case 'contact':
+        if (!contactInput.trim()) return;
+        inputValue = contactInput;
+        setContactInput("");
+        break;
+      case 'payment':
+        if (!paymentInput.trim()) return;
+        inputValue = paymentInput;
+        setPaymentInput("");
+        break;
+    }
+    
+    onBookingStageComplete(stage, inputValue);
   };
 
   return (
@@ -142,7 +163,7 @@ const AIChatMessages: React.FC<AIChatMessagesProps> = ({
                   </div>
                 )}
                 
-                {/* Booking flow UI */}
+                {/* Booking flow UI with separate input states */}
                 {message.booking && (
                   <div className="mt-3">
                     {message.booking.stage === 'passenger' && (
@@ -151,8 +172,8 @@ const AIChatMessages: React.FC<AIChatMessagesProps> = ({
                         <div className="flex gap-2">
                           <Input 
                             placeholder="First and Last Name" 
-                            value={bookingInput} 
-                            onChange={(e) => setBookingInput(e.target.value)} 
+                            value={passengerInput} 
+                            onChange={(e) => setPassengerInput(e.target.value)} 
                             className="flex-1"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
@@ -174,8 +195,8 @@ const AIChatMessages: React.FC<AIChatMessagesProps> = ({
                           <Input 
                             placeholder="Email Address" 
                             type="email"
-                            value={bookingInput} 
-                            onChange={(e) => setBookingInput(e.target.value)} 
+                            value={contactInput} 
+                            onChange={(e) => setContactInput(e.target.value)} 
                             className="flex-1"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
@@ -198,8 +219,8 @@ const AIChatMessages: React.FC<AIChatMessagesProps> = ({
                             <CreditCard className="h-4 w-4 text-gray-500" />
                             <Input 
                               placeholder="Card Number" 
-                              value={bookingInput} 
-                              onChange={(e) => setBookingInput(e.target.value)} 
+                              value={paymentInput} 
+                              onChange={(e) => setPaymentInput(e.target.value)} 
                               className="flex-1"
                             />
                           </div>
