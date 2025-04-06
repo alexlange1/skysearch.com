@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -9,7 +8,6 @@ import { Send, Lightbulb } from "lucide-react";
 import { mcpFlightSearch } from '@/services/mcpService';
 import { useToast } from "@/hooks/use-toast";
 
-// Add the Message interface with booking property
 interface Message {
   type: string;
   content: string;
@@ -37,23 +35,17 @@ const AIChat = () => {
     e.preventDefault();
     if (input.trim() === '') return;
 
-    // Add user message
     const userMessage: Message = { type: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
     
-    // Clear input and set loading state
     const userQuery = input;
-    setInput('');
     setIsLoading(true);
     
     try {
-      // Call MCP service to search for flights
       const result = await mcpFlightSearch(userQuery);
       
-      // Save flights to state for potential booking
       setFlights(result.flights);
       
-      // Create AI response with flight data
       const aiMessage: Message = { 
         type: 'ai', 
         content: result.responseMessage,
@@ -77,14 +69,12 @@ const AIChat = () => {
     setIsLoading(true);
     
     try {
-      // Begin the booking flow
       setCurrentBooking({
         flight,
         stage: 'passenger',
         data: {}
       });
       
-      // Add an AI message to request passenger details
       const bookingStartMessage: Message = { 
         type: 'ai', 
         content: `Great choice! I'll help you book your ${flight.airline} flight from ${flight.departureAirport} to ${flight.arrivalAirport} on ${flight.departureTime}. First, I need some information.`,
@@ -107,21 +97,18 @@ const AIChat = () => {
   const handleBookingStageComplete = (stage, data) => {
     setIsLoading(true);
     
-    // Add user input as a message
     const userMessage: Message = { 
       type: 'user', 
-      content: data 
+      content: stage === 'payment' ? 'Payment information submitted' : data 
     };
     
     setMessages(prev => [...prev, userMessage]);
     
-    // Update the current booking data
     setCurrentBooking(prev => ({
       ...prev,
       data: { ...prev.data, [stage]: data }
     }));
     
-    // Process based on current stage
     setTimeout(() => {
       let nextStage = '';
       let aiMessage: Message = { type: 'ai', content: '' };
@@ -146,13 +133,11 @@ const AIChat = () => {
           break;
           
         case 'payment':
-          // Final stage - booking complete
           aiMessage = { 
             type: 'ai', 
             content: `Great choice! I've booked your ${currentBooking.flight.airline} flight from ${currentBooking.flight.departureAirport} to ${currentBooking.flight.arrivalAirport} on ${currentBooking.flight.departureTime}. Your confirmation number is ${Math.random().toString(36).substring(2, 10).toUpperCase()}.`
           };
           
-          // Reset the booking process
           setCurrentBooking(null);
           
           toast({
@@ -178,7 +163,6 @@ const AIChat = () => {
     setInput(query);
   };
 
-  // Get a random placeholder from suggested queries
   const getRandomPlaceholder = () => {
     return suggestedQueries[Math.floor(Math.random() * suggestedQueries.length)];
   };

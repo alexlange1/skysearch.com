@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Sparkles, User, Clock, Plane, CreditCard, Check, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -7,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { Separator } from "@/components/ui/separator";
 
 interface Flight {
   id: string;
@@ -52,7 +52,11 @@ const AIChatMessages: React.FC<AIChatMessagesProps> = ({
   // Create separate state for each input type
   const [passengerInput, setPassengerInput] = useState("");
   const [contactInput, setContactInput] = useState("");
-  const [paymentInput, setPaymentInput] = useState("");
+  const [paymentInputs, setPaymentInputs] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvv: ""
+  });
   
   const handleBookingInput = (stage: string) => {
     let inputValue = "";
@@ -62,17 +66,22 @@ const AIChatMessages: React.FC<AIChatMessagesProps> = ({
       case 'passenger':
         if (!passengerInput.trim()) return;
         inputValue = passengerInput;
-        setPassengerInput("");
+        // Don't clear passenger input to keep it after submission
         break;
       case 'contact':
         if (!contactInput.trim()) return;
         inputValue = contactInput;
-        setContactInput("");
+        // Don't clear contact input to keep it after submission
         break;
       case 'payment':
-        if (!paymentInput.trim()) return;
-        inputValue = paymentInput;
-        setPaymentInput("");
+        // Check if all payment fields are filled
+        if (!paymentInputs.cardNumber.trim() || 
+            !paymentInputs.expiryDate.trim() || 
+            !paymentInputs.cvv.trim()) return;
+            
+        // Combine payment information
+        inputValue = JSON.stringify(paymentInputs);
+        // Don't clear payment inputs to keep them after submission
         break;
     }
     
@@ -126,12 +135,12 @@ const AIChatMessages: React.FC<AIChatMessagesProps> = ({
                               
                               <div className="flex flex-col items-center">
                                 <div className="text-xs text-gray-500 mb-1">{flight.duration}</div>
-                                <div className="relative flex items-center">
+                                <div className="relative flex flex-col items-center">
                                   <div className="w-16 md:w-24 h-0.5 bg-gray-300"></div>
                                   {flight.stops === 0 ? (
-                                    <Plane size={14} className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 text-blue-500" />
+                                    <Plane size={14} className="absolute top-0 left-1/2 transform -translate-y-1/2 -translate-x-1/2 text-blue-500" />
                                   ) : (
-                                    <div className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 text-orange-500 text-xs font-semibold">
+                                    <div className="text-orange-500 text-xs font-semibold mt-1">
                                       {flight.stops} {flight.stops === 1 ? 'stop' : 'stops'}
                                     </div>
                                   )}
@@ -219,11 +228,27 @@ const AIChatMessages: React.FC<AIChatMessagesProps> = ({
                             <CreditCard className="h-4 w-4 text-gray-500" />
                             <Input 
                               placeholder="Card Number" 
-                              value={paymentInput} 
-                              onChange={(e) => setPaymentInput(e.target.value)} 
+                              value={paymentInputs.cardNumber} 
+                              onChange={(e) => setPaymentInputs({...paymentInputs, cardNumber: e.target.value})} 
                               className="flex-1"
                             />
                           </div>
+                          
+                          <div className="grid grid-cols-2 gap-2">
+                            <Input 
+                              placeholder="MM/YY" 
+                              value={paymentInputs.expiryDate}
+                              onChange={(e) => setPaymentInputs({...paymentInputs, expiryDate: e.target.value})}
+                              className="flex-1"
+                            />
+                            <Input 
+                              placeholder="CVV" 
+                              value={paymentInputs.cvv}
+                              onChange={(e) => setPaymentInputs({...paymentInputs, cvv: e.target.value})}
+                              className="flex-1"
+                            />
+                          </div>
+                          
                           <div className="flex gap-2">
                             <Button 
                               className="flex-1" 

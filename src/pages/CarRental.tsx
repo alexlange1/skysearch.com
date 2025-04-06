@@ -69,9 +69,9 @@ const CarRental = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { name: "Economy", model: "Fiat Tipo", price: "from $25/day", image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
-            { name: "SUV", model: "BMW X5", price: "from $45/day", image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { name: "SUV", model: "BMW X5", price: "from $45/day", image: "/lovable-uploads/fef1283b-13f7-4552-9d06-a83e597f0b41.png" },
             { name: "Luxury", model: "Porsche 911", price: "from $85/day", image: "https://images.unsplash.com/photo-1580274455191-1c62238fa333?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
-            { name: "Van", model: "Mercedes V Class", price: "from $65/day", image: "https://images.unsplash.com/photo-1551927336-09d50efd69cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { name: "Van", model: "Mercedes V Class", price: "from $65/day", image: "/lovable-uploads/7a8f38c7-47d7-42aa-babb-7d63a1f8ba95.png" },
           ].map((car) => (
             <div key={car.name} className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
