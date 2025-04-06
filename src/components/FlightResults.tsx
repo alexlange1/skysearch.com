@@ -82,90 +82,87 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
   };
 
   return (
-    <div className="w-full py-10 px-4 bg-white">
-      <div className="container mx-auto">
-        <h2 className="text-2xl font-bold mb-6">Flight Results</h2>
-        <div className="space-y-4">
-          {flights.map((flight) => (
-            <Card key={flight.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <CardContent className="p-0">
-                <div className="flex flex-col md:flex-row">
-                  {/* Airline and Flight Number Section */}
-                  <div className="bg-blue-50 p-4 md:w-1/4 flex flex-col justify-center items-center">
-                    <div className="text-lg font-bold text-center">{flight.airline}</div>
-                    <div className="text-sm text-gray-500">{flight.flightNumber}</div>
-                    <Badge variant={flight.stops === 0 ? "outline" : "secondary"} className="mt-2">
-                      {flight.stops === 0 ? 'Direct' : `${flight.stops} Stop${flight.stops > 1 ? 's' : ''}`}
-                    </Badge>
+    <div className="w-full py-4 bg-white">
+      <div className="space-y-4">
+        {flights.map((flight) => (
+          <Card key={flight.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <CardContent className="p-0">
+              <div className="flex flex-col md:flex-row">
+                {/* Airline and Flight Number Section */}
+                <div className="bg-blue-50 p-4 md:w-1/4 flex flex-col justify-center items-center">
+                  <div className="text-lg font-bold text-center">{flight.airline}</div>
+                  <div className="text-sm text-gray-500">{flight.flightNumber}</div>
+                  <Badge variant={flight.stops === 0 ? "outline" : "secondary"} className="mt-2">
+                    {flight.stops === 0 ? 'Direct' : `${flight.stops} Stop${flight.stops > 1 ? 's' : ''}`}
+                  </Badge>
+                </div>
+                
+                {/* Flight Details Section */}
+                <div className="p-6 md:w-2/4 flex flex-col md:flex-row justify-between items-center">
+                  {/* Departure Info */}
+                  <div className="text-center md:text-left mb-2 md:mb-0">
+                    <div className="flex items-center">
+                      <Plane className="mr-2 text-blue-500" size={20} />
+                      <span className="text-lg font-semibold">{flight.departureTime}</span>
+                    </div>
+                    <div className="text-sm font-medium">{flight.departureAirportCode}</div>
                   </div>
                   
-                  {/* Flight Details Section */}
-                  <div className="p-6 md:w-2/4 flex flex-col md:flex-row justify-between items-center">
-                    {/* Departure Info */}
-                    <div className="text-center md:text-left mb-2 md:mb-0">
-                      <div className="flex items-center">
-                        <Plane className="mr-2 text-blue-500" size={20} />
-                        <span className="text-lg font-semibold">{flight.departureTime}</span>
-                      </div>
-                      <div className="text-sm font-medium">{flight.departureAirportCode}</div>
+                  {/* Duration */}
+                  <div className="flex flex-col items-center mx-4">
+                    <div className="text-xs text-gray-500 mb-1">Duration</div>
+                    <div className="flex items-center">
+                      <Clock className="mr-1 text-gray-400" size={16} />
+                      <span className="font-medium">{flight.duration}</span>
                     </div>
-                    
-                    {/* Duration */}
-                    <div className="flex flex-col items-center mx-4">
-                      <div className="text-xs text-gray-500 mb-1">Duration</div>
-                      <div className="flex items-center">
-                        <Clock className="mr-1 text-gray-400" size={16} />
-                        <span className="font-medium">{flight.duration}</span>
-                      </div>
-                      <div className="w-32 h-0.5 bg-gray-300 relative my-2">
-                        {flight.stops === 0 ? (
-                          <div className="w-2 h-2 rounded-full bg-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-                        ) : (
-                          <>
-                            {Array.from({ length: flight.stops }).map((_, idx) => (
-                              <div 
-                                key={idx}
-                                className="w-2 h-2 rounded-full bg-orange-500 absolute top-1/2 transform -translate-y-1/2"
-                                style={{ left: `${(idx + 1) * 100 / (flight.stops + 1)}%` }}
-                              ></div>
-                            ))}
-                          </>
-                        )}
-                      </div>
-                      {flight.stops > 0 && (
-                        <div className="text-xs text-orange-500 font-semibold">
-                          {flight.stops} stop{flight.stops > 1 ? 's' : ''}
-                        </div>
+                    <div className="w-32 h-0.5 bg-gray-300 relative my-2">
+                      {flight.stops === 0 ? (
+                        <div className="w-2 h-2 rounded-full bg-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                      ) : (
+                        <>
+                          {Array.from({ length: flight.stops }).map((_, idx) => (
+                            <div 
+                              key={idx}
+                              className="w-2 h-2 rounded-full bg-orange-500 absolute top-1/2 transform -translate-y-1/2"
+                              style={{ left: `${(idx + 1) * 100 / (flight.stops + 1)}%` }}
+                            ></div>
+                          ))}
+                        </>
                       )}
                     </div>
-                    
-                    {/* Arrival Info */}
-                    <div className="text-center md:text-right mt-2 md:mt-0">
-                      <div className="flex items-center justify-end">
-                        <span className="text-lg font-semibold">{flight.arrivalTime}</span>
-                        <Plane className="ml-2 text-blue-500 transform rotate-90" size={20} />
+                    {flight.stops > 0 && (
+                      <div className="text-xs text-orange-500 font-semibold">
+                        {flight.stops} stop{flight.stops > 1 ? 's' : ''}
                       </div>
-                      <div className="text-sm font-medium">{flight.arrivalAirportCode}</div>
-                    </div>
+                    )}
                   </div>
                   
-                  {/* Price and Booking Section */}
-                  <div className="bg-blue-50 p-6 md:w-1/4 flex flex-col justify-center items-center">
-                    <div className="text-2xl font-bold text-blue-600">
-                      ${flight.price}
+                  {/* Arrival Info */}
+                  <div className="text-center md:text-right mt-2 md:mt-0">
+                    <div className="flex items-center justify-end">
+                      <span className="text-lg font-semibold">{flight.arrivalTime}</span>
+                      <Plane className="ml-2 text-blue-500 transform rotate-90" size={20} />
                     </div>
-                    <button 
-                      className="mt-3 w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-md font-medium transition-colors"
-                      onClick={() => handleBookFlight(flight)}
-                    >
-                      Select
-                    </button>
+                    <div className="text-sm font-medium">{flight.arrivalAirportCode}</div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                
+                {/* Price and Booking Section */}
+                <div className="bg-blue-50 p-6 md:w-1/4 flex flex-col justify-center items-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    ${flight.price}
+                  </div>
+                  <button 
+                    className="mt-3 w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-md font-medium transition-colors"
+                    onClick={() => handleBookFlight(flight)}
+                  >
+                    Select
+                  </button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );

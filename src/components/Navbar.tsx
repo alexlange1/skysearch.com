@@ -1,73 +1,138 @@
 
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, Plane, Building2, Car, Compass, MapPin } from "lucide-react";
+import { Plane, Map, Hotel, Car, MessageCircle } from "lucide-react";
+
+// List of components in the menu
+const components: { title: string; href: string; description: string; icon: React.ReactNode }[] = [
+  {
+    title: "Flights",
+    href: "/",
+    description: "Find the best flight deals from hundreds of travel sites.",
+    icon: <Plane className="h-6 w-6 text-blue-500" />,
+  },
+  {
+    title: "Hotels",
+    href: "#",
+    description: "Book your stay at the perfect place for your travels.",
+    icon: <Hotel className="h-6 w-6 text-blue-500" />,
+  },
+  {
+    title: "Car Rental",
+    href: "#",
+    description: "Rent a car at the best prices for your destination.",
+    icon: <Car className="h-6 w-6 text-blue-500" />,
+  },
+  {
+    title: "Explore",
+    href: "#",
+    description: "Discover new places and plan your next adventure.",
+    icon: <Map className="h-6 w-6 text-blue-500" />,
+  },
+  {
+    title: "AI Chat",
+    href: "/ai-chat",
+    description: "Talk to our AI travel assistant to plan your journey.",
+    icon: <MessageCircle className="h-6 w-6 text-blue-500" />,
+  },
+];
+
+// Inline component for the navigation menu link
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  )
+})
+ListItem.displayName = "ListItem"
 
 const Navbar = () => {
+  const location = useLocation();
+
   return (
-    <div className="bg-flightblue w-full">
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex justify-between items-center">
-          <div className="text-white text-2xl font-bold flex items-center">
-            <Plane className="mr-2 h-6 w-6 rotate-45" />
-            Flightly.com
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" className="text-white bg-transparent border-transparent hover:bg-flightblue-600">
-              <HelpCircle className="mr-2 h-4 w-4" />
-              Help
-            </Button>
-            <Button variant="outline" className="bg-white text-flightblue hover:bg-gray-100">
-              Register
-            </Button>
-            <Button className="bg-white text-flightblue hover:bg-gray-100">
-              Sign in
-            </Button>
-          </div>
+    <div className="bg-white shadow-md">
+      <div className="container mx-auto flex justify-between items-center py-4 px-4">
+        <div className="flex items-center">
+          <Link to="/" className="flex items-center mr-10">
+            <Plane className="h-6 w-6 text-blue-600 rotate-45 mr-2" />
+            <span className="text-xl font-bold text-blue-600">SkySearch</span>
+          </Link>
+
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Travel Options</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    {components.map((component) => (
+                      <ListItem
+                        key={component.title}
+                        title={
+                          <div className="flex items-center">
+                            {component.icon}
+                            <span className="ml-2">{component.title}</span>
+                          </div>
+                        }
+                        href={component.href}
+                      >
+                        {component.description}
+                      </ListItem>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <Link to="/" legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Flights
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <Link to="/ai-chat" legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    AI Chat
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
-        <div className="flex mt-4 space-x-4 overflow-x-auto pb-2">
-          <Button
-            variant="outline"
-            className="bg-transparent text-white border-white border rounded-full hover:bg-flightblue-600"
-          >
-            <Building2 className="mr-2 h-4 w-4" />
-            Stays
-          </Button>
-          <Button
-            variant="outline"
-            className="bg-white text-flightblue border-white border rounded-full hover:bg-gray-100"
-          >
-            <Plane className="mr-2 h-4 w-4" />
-            Flights
-          </Button>
-          <Button
-            variant="outline"
-            className="bg-transparent text-white border-white border rounded-full hover:bg-flightblue-600"
-          >
-            <Building2 className="mr-2 h-4 w-4" />
-            <Plane className="mr-2 h-4 w-4" />
-            Flight + Hotel
-          </Button>
-          <Button
-            variant="outline"
-            className="bg-transparent text-white border-white border rounded-full hover:bg-flightblue-600"
-          >
-            <Car className="mr-2 h-4 w-4" />
-            Car rentals
-          </Button>
-          <Button
-            variant="outline"
-            className="bg-transparent text-white border-white border rounded-full hover:bg-flightblue-600"
-          >
-            <Compass className="mr-2 h-4 w-4" />
-            Attractions
-          </Button>
-          <Button
-            variant="outline"
-            className="bg-transparent text-white border-white border rounded-full hover:bg-flightblue-600"
-          >
-            <Car className="mr-2 h-4 w-4" />
-            Airport taxis
-          </Button>
+        
+        <div className="flex items-center gap-2">
+          <Button variant="outline">Sign In</Button>
+          <Button>Sign Up</Button>
         </div>
       </div>
     </div>
