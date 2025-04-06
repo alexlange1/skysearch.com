@@ -47,6 +47,7 @@ export const airports: Airport[] = [
   { code: 'FRA', name: 'Frankfurt Airport', city: 'Frankfurt', country: 'Germany' },
   { code: 'AMS', name: 'Amsterdam Airport Schiphol', city: 'Amsterdam', country: 'Netherlands' },
   { code: 'MAD', name: 'Adolfo Suárez Madrid–Barajas Airport', city: 'Madrid', country: 'Spain' },
+  { code: 'BCN', name: 'Barcelona–El Prat Airport', city: 'Barcelona', country: 'Spain' },
   { code: 'FCO', name: 'Leonardo da Vinci–Fiumicino Airport', city: 'Rome', country: 'Italy' },
   { code: 'DXB', name: 'Dubai International Airport', city: 'Dubai', country: 'UAE' },
   { code: 'SIN', name: 'Singapore Changi Airport', city: 'Singapore', country: 'Singapore' },
@@ -84,6 +85,7 @@ const airportDistances: { [key: string]: { [key: string]: number } } = {
     'CDG': 5834,
     'FRA': 6202,
     'AMS': 5831,
+    'BCN': 6164,
   },
   'LAX': {
     'JFK': 3983,
@@ -96,12 +98,35 @@ const airportDistances: { [key: string]: { [key: string]: number } } = {
     'CDG': 9105,
     'FRA': 9320,
     'AMS': 8978,
+    'BCN': 9412,
+  },
+  'BCN': {
+    'JFK': 6164,
+    'LAX': 9412,
+    'LHR': 1147,
+    'CDG': 852,
+    'MAD': 506,
+    'FRA': 1092,
   },
   // Add more distances as needed based on common routes
 };
 
+// Dictionary to store airline-specific time variations (in minutes)
+const airlineTimeVariations: { [key: string]: number } = {
+  'Delta Airlines': -5,
+  'United Airlines': 3,
+  'American Airlines': -2,
+  'JetBlue': 0,
+  'Southwest': 8,
+  'British Airways': -7,
+  'Lufthansa': -3,
+  'Air France': 2,
+  'Emirates': -10,
+  'Singapore Airlines': -8,
+};
+
 // Estimate flight duration based on airport codes
-export const estimateFlightDuration = (fromCode: string, toCode: string): string => {
+export const estimateFlightDuration = (fromCode: string, toCode: string, airline: string = '', stops: number = 0): string => {
   // Extract airport codes from formatted strings if needed
   const extractCode = (airportString: string): string => {
     const match = airportString.match(/^([A-Z]{3})/);
@@ -134,6 +159,7 @@ export const estimateFlightDuration = (fromCode: string, toCode: string): string
       'FRA': [50.0379, 8.5622], // Frankfurt
       'AMS': [52.3105, 4.7683], // Amsterdam
       'MAD': [40.4983, -3.5676], // Madrid
+      'BCN': [41.2974, 2.0833], // Barcelona
       'FCO': [41.8045, 12.2508], // Rome
       'DXB': [25.2532, 55.3657], // Dubai
       'SIN': [1.3644, 103.9915], // Singapore
@@ -166,11 +192,23 @@ export const estimateFlightDuration = (fromCode: string, toCode: string): string
   // Calculate hours and minutes
   // Using average speed of 800 km/h plus 30 minutes for takeoff and landing
   const flightTimeHours = distance / 800;
-  const hours = Math.floor(flightTimeHours);
-  const minutes = Math.round((flightTimeHours - hours) * 60);
+  const baseHours = Math.floor(flightTimeHours);
+  const baseMinutes = Math.round((flightTimeHours - baseHours) * 60);
   
   // Add 30 minutes for takeoff and landing
-  let totalMinutes = hours * 60 + minutes + 30;
+  let totalMinutes = baseHours * 60 + baseMinutes + 30;
+  
+  // Apply airline-specific variation if available
+  if (airline && airlineTimeVariations[airline]) {
+    totalMinutes += airlineTimeVariations[airline];
+  }
+  
+  // For flights with stops, add more time
+  if (stops > 0) {
+    // Each stop adds a percentage to the total flight time (layover + additional takeoff/landing)
+    totalMinutes = Math.round(totalMinutes * (1 + stops * 0.6));
+  }
+  
   const finalHours = Math.floor(totalMinutes / 60);
   const finalMinutes = totalMinutes % 60;
   
@@ -232,9 +270,6 @@ const generateFlight = (params: FlightSearchParams, index: number): Flight => {
   const departureCode = params.departureAirport.substring(0, 3);
   const arrivalCode = params.destinationAirport.substring(0, 3);
   
-  // Estimate flight duration
-  const duration = estimateFlightDuration(departureCode, arrivalCode);
-  
   // Generate airlines based on routes
   const airlines = [
     'Delta Airlines',
@@ -250,6 +285,18 @@ const generateFlight = (params: FlightSearchParams, index: number): Flight => {
   ];
   const airline = airlines[Math.floor(Math.random() * airlines.length)];
   
+  // Generate stops - more likely to have stops on longer flights
+  const isLongHaul = departureCode && arrivalCode && 
+    ((airportDistances[departureCode]?.[arrivalCode] || 0) > 3000 || 
+     (airportDistances[arrivalCode]?.[departureCode] || 0) > 3000);
+     
+  const stops = isLongHaul ? 
+    (Math.random() > 0.3 ? 1 : 0) : 
+    (Math.random() > 0.7 ? 1 : 0);
+    
+  // Estimate flight duration (now considers airline variations and stops)
+  const duration = estimateFlightDuration(departureCode, arrivalCode, airline, stops);
+  
   // Generate flight times based on duration and departure date
   const { departureTime, arrivalTime } = generateFlightTimes(duration, params.departureDate);
   
@@ -260,12 +307,6 @@ const generateFlight = (params: FlightSearchParams, index: number): Flight => {
                          duration.includes('12h') ? 4 : 1;
   const seasonalFactor = Math.random() * 0.4 + 0.8; // 0.8 to 1.2
   const price = Math.round((basePrice * distanceFactor * seasonalFactor) / 5) * 5;
-  
-  // Generate stops - more likely to have stops on longer flights
-  const isLongHaul = duration.includes('8h') || duration.includes('12h');
-  const stops = isLongHaul ? 
-    (Math.random() > 0.3 ? 1 : 0) : 
-    (Math.random() > 0.7 ? 1 : 0);
   
   return {
     id: `${index + 1}`,

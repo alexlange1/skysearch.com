@@ -35,7 +35,7 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
                   <div className="bg-blue-50 p-4 md:w-1/4 flex flex-col justify-center items-center border-r border-gray-200">
                     <div className="text-lg font-bold text-center">{flight.airline}</div>
                     <div className="text-sm text-gray-500">{flight.flightNumber}</div>
-                    <Badge variant="outline" className="mt-2">
+                    <Badge variant={flight.stops === 0 ? "outline" : "secondary"} className="mt-2">
                       {flight.stops === 0 ? 'Direct' : `${flight.stops} Stop${flight.stops > 1 ? 's' : ''}`}
                     </Badge>
                   </div>
@@ -56,10 +56,17 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
                         <span className="font-medium">{flight.duration}</span>
                       </div>
                       <div className="w-24 h-0.5 bg-gray-300 relative my-1">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                        {flight.stops === 0 ? (
+                          <div className="w-2 h-2 rounded-full bg-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                        ) : (
+                          <>
+                            <div className="w-2 h-2 rounded-full bg-orange-500 absolute top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2"></div>
+                            <div className="w-2 h-2 rounded-full bg-orange-500 absolute top-1/2 left-3/4 transform -translate-x-1/2 -translate-y-1/2"></div>
+                          </>
+                        )}
                       </div>
                       {flight.stops > 0 && (
-                        <div className="text-xs text-orange-500">
+                        <div className="text-xs text-orange-500 font-semibold">
                           {flight.stops} stop{flight.stops > 1 ? 's' : ''}
                         </div>
                       )}

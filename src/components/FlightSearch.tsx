@@ -16,7 +16,7 @@ import FlightResults from "./FlightResults";
 import { useToast } from "@/hooks/use-toast";
 
 const FlightSearch = () => {
-  const [tripType, setTripType] = useState("round-trip");
+  const [tripType, setTripType] = useState("one-way");
   const [directFlightsOnly, setDirectFlightsOnly] = useState(false);
   const [departureDate, setDepartureDate] = useState<Date>();
   const [returnDate, setReturnDate] = useState<Date>();
@@ -146,7 +146,7 @@ const FlightSearch = () => {
           <p className="text-lg mb-6">Discover your next dream destination</p>
 
           <RadioGroup 
-            defaultValue="round-trip" 
+            defaultValue="one-way" 
             value={tripType}
             className="flex space-x-6 mb-4"
             onValueChange={(value) => {
