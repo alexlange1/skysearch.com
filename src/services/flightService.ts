@@ -24,6 +24,53 @@ export interface FlightSearchParams {
   tripType: string;
 }
 
+export interface Airport {
+  code: string;
+  name: string;
+  city: string;
+  country: string;
+}
+
+// List of popular airports for autocomplete
+export const airports: Airport[] = [
+  { code: 'JFK', name: 'John F. Kennedy International Airport', city: 'New York', country: 'USA' },
+  { code: 'LGA', name: 'LaGuardia Airport', city: 'New York', country: 'USA' },
+  { code: 'EWR', name: 'Newark Liberty International Airport', city: 'Newark', country: 'USA' },
+  { code: 'LAX', name: 'Los Angeles International Airport', city: 'Los Angeles', country: 'USA' },
+  { code: 'SFO', name: 'San Francisco International Airport', city: 'San Francisco', country: 'USA' },
+  { code: 'ORD', name: 'O\'Hare International Airport', city: 'Chicago', country: 'USA' },
+  { code: 'ATL', name: 'Hartsfield-Jackson Atlanta International Airport', city: 'Atlanta', country: 'USA' },
+  { code: 'DFW', name: 'Dallas/Fort Worth International Airport', city: 'Dallas', country: 'USA' },
+  { code: 'MIA', name: 'Miami International Airport', city: 'Miami', country: 'USA' },
+  { code: 'LHR', name: 'London Heathrow Airport', city: 'London', country: 'UK' },
+  { code: 'CDG', name: 'Charles de Gaulle Airport', city: 'Paris', country: 'France' },
+  { code: 'FRA', name: 'Frankfurt Airport', city: 'Frankfurt', country: 'Germany' },
+  { code: 'AMS', name: 'Amsterdam Airport Schiphol', city: 'Amsterdam', country: 'Netherlands' },
+  { code: 'MAD', name: 'Adolfo Suárez Madrid–Barajas Airport', city: 'Madrid', country: 'Spain' },
+  { code: 'FCO', name: 'Leonardo da Vinci–Fiumicino Airport', city: 'Rome', country: 'Italy' },
+  { code: 'DXB', name: 'Dubai International Airport', city: 'Dubai', country: 'UAE' },
+  { code: 'SIN', name: 'Singapore Changi Airport', city: 'Singapore', country: 'Singapore' },
+  { code: 'HND', name: 'Tokyo Haneda Airport', city: 'Tokyo', country: 'Japan' },
+  { code: 'SYD', name: 'Sydney Airport', city: 'Sydney', country: 'Australia' },
+  { code: 'HKG', name: 'Hong Kong International Airport', city: 'Hong Kong', country: 'China' },
+];
+
+// Format airport for display in dropdown
+export const formatAirport = (airport: Airport): string => {
+  return `${airport.code} - ${airport.city} (${airport.name})`;
+};
+
+// Filter airports based on search query
+export const filterAirports = (query: string): Airport[] => {
+  const lowerQuery = query.toLowerCase();
+  return airports.filter(airport => 
+    airport.code.toLowerCase().includes(lowerQuery) ||
+    airport.name.toLowerCase().includes(lowerQuery) ||
+    airport.city.toLowerCase().includes(lowerQuery) ||
+    airport.country.toLowerCase().includes(lowerQuery)
+  );
+};
+
 // This is a mock implementation of the MPC algorithm from the repository
 // In a real application, we would import and use the actual implementation
 export const searchFlights = async (params: FlightSearchParams): Promise<Flight[]> => {
