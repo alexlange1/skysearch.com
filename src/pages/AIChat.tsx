@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, LightbulbIcon, Info } from "lucide-react";
+import { Send, LightbulbIcon, Info, Sparkles } from "lucide-react";
 import AIChatMessages from "@/components/AIChatMessages";
 import FlightResults from "@/components/FlightResults";
 import { Flight } from '@/services/flightService';
@@ -90,25 +90,29 @@ const AIChat: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       
-      <div className="flex-grow bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+      <div className="flex-grow py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-6 w-6 text-blue-600" />
               <h1 className="text-2xl font-bold text-gray-900">AI Travel Assistant</h1>
-              <Button variant="ghost" size="icon" className="ml-2">
+              <Button variant="ghost" size="icon" className="ml-1">
                 <Info className="h-4 w-4" />
               </Button>
             </div>
             <div className="text-sm text-blue-600 font-medium">Expert Flight Search</div>
           </div>
           
-          <Card className="shadow-md border border-gray-200 overflow-hidden bg-white rounded-xl">
+          <Card className="shadow-lg border-0 overflow-hidden bg-white rounded-2xl">
             <CardContent className="p-0">
               {messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+                  <div className="bg-blue-100 p-3 rounded-full mb-4">
+                    <Sparkles className="h-8 w-8 text-blue-600" />
+                  </div>
                   <h2 className="text-3xl font-bold text-gray-800 mb-3">
                     Ask me about flights
                   </h2>
@@ -121,7 +125,7 @@ const AIChat: React.FC = () => {
                       <Button 
                         key={index} 
                         variant="outline" 
-                        className="p-4 h-auto justify-start text-left flex items-start border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors" 
+                        className="p-4 h-auto justify-start text-left flex items-start border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-colors" 
                         onClick={() => handleSuggestionClick(query)}
                       >
                         <LightbulbIcon className="mr-3 h-5 w-5 mt-0.5 text-blue-500 flex-shrink-0" />
@@ -131,7 +135,7 @@ const AIChat: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="px-4 py-6 overflow-auto max-h-[500px] bg-gray-50">
+                <div className="px-4 py-6 overflow-auto max-h-[60vh] bg-gray-50 rounded-t-2xl">
                   <AIChatMessages messages={messages} isLoading={isLoading} />
                   <div ref={messagesEndRef} />
                   
