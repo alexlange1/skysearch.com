@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send, Lightbulb } from "lucide-react";
 import { mcpFlightSearch } from '@/services/mcpService';
+import { useToast } from "@/hooks/use-toast";
 
 const AIChat = () => {
   const [messages, setMessages] = useState([
@@ -18,6 +19,8 @@ const AIChat = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [flights, setFlights] = useState([]);
+  const [currentBooking, setCurrentBooking] = useState(null);
+  const { toast } = useToast();
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -63,25 +66,94 @@ const AIChat = () => {
     setIsLoading(true);
     
     try {
-      // In a real implementation, this would call the bookFlight MCP function
-      // For now, we'll simulate a successful booking with a confirmation message
-      setTimeout(() => {
-        const bookingMessage = { 
-          type: 'ai', 
-          content: `Great choice! I've booked your ${flight.airline} flight from ${flight.departureAirport} to ${flight.arrivalAirport} on ${flight.departureTime}. Your confirmation number is ${Math.random().toString(36).substring(2, 10).toUpperCase()}.`
-        };
-        setMessages(prev => [...prev, bookingMessage]);
-        setIsLoading(false);
-      }, 1500);
+      // Begin the booking flow
+      setCurrentBooking({
+        flight,
+        stage: 'passenger',
+        data: {}
+      });
+      
+      // Add an AI message to request passenger details
+      const bookingStartMessage = { 
+        type: 'ai', 
+        content: `Great choice! I'll help you book your ${flight.airline} flight from ${flight.departureAirport} to ${flight.arrivalAirport} on ${flight.departureTime}. First, I need some information.`,
+        booking: { stage: 'passenger', flight }
+      };
+      
+      setMessages(prev => [...prev, bookingStartMessage]);
+      setIsLoading(false);
     } catch (error) {
-      console.error('Error booking flight:', error);
+      console.error('Error starting booking:', error);
       const errorMessage = { 
         type: 'ai', 
-        content: "I'm sorry, I encountered an error while booking your flight. Please try again."
+        content: "I'm sorry, I encountered an error while preparing your booking. Please try again."
       };
       setMessages(prev => [...prev, errorMessage]);
       setIsLoading(false);
     }
+  };
+
+  const handleBookingStageComplete = (stage, data) => {
+    setIsLoading(true);
+    
+    // Add user input as a message
+    const userMessage = { 
+      type: 'user', 
+      content: data 
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Update the current booking data
+    setCurrentBooking(prev => ({
+      ...prev,
+      data: { ...prev.data, [stage]: data }
+    }));
+    
+    // Process based on current stage
+    setTimeout(() => {
+      let nextStage = '';
+      let aiMessage = { type: 'ai', content: '' };
+      
+      switch(stage) {
+        case 'passenger':
+          nextStage = 'contact';
+          aiMessage = { 
+            type: 'ai', 
+            content: `Thank you, ${data}. Now I need your contact information. Please enter your email address.`,
+            booking: { stage: nextStage, flight: currentBooking.flight }
+          };
+          break;
+          
+        case 'contact':
+          nextStage = 'payment';
+          aiMessage = { 
+            type: 'ai', 
+            content: `Thank you. Your booking is almost complete. Please enter your credit card information to finalize your booking.`,
+            booking: { stage: nextStage, flight: currentBooking.flight }
+          };
+          break;
+          
+        case 'payment':
+          // Final stage - booking complete
+          aiMessage = { 
+            type: 'ai', 
+            content: `Great choice! I've booked your ${currentBooking.flight.airline} flight from ${currentBooking.flight.departureAirport} to ${currentBooking.flight.arrivalAirport} on ${currentBooking.flight.departureTime}. Your confirmation number is ${Math.random().toString(36).substring(2, 10).toUpperCase()}.`
+          };
+          
+          // Reset the booking process
+          setCurrentBooking(null);
+          
+          toast({
+            title: "Booking Successful",
+            description: "Check your email for confirmation details",
+          });
+          break;
+      }
+      
+      setMessages(prev => [...prev, aiMessage]);
+      setIsLoading(false);
+    }, 1000);
   };
 
   const suggestedQueries = [
@@ -141,6 +213,7 @@ const AIChat = () => {
                 messages={messages} 
                 isLoading={isLoading} 
                 onBookFlight={handleBookFlight}
+                onBookingStageComplete={handleBookingStageComplete}
               />
             </div>
           )}

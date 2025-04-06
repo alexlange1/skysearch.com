@@ -1,10 +1,12 @@
 
 import React from 'react';
-import { Sparkles, User, Clock, Plane } from "lucide-react";
+import { Sparkles, User, Clock, Plane, CreditCard, Check, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 interface Flight {
   id: string;
@@ -27,15 +29,35 @@ interface Message {
   type: string;
   content: string;
   flights?: Flight[];
+  booking?: {
+    stage?: string;
+    flight?: Flight;
+    data?: any;
+  };
 }
 
 interface AIChatMessagesProps {
   messages: Message[];
   isLoading: boolean;
   onBookFlight: (flight: Flight) => void;
+  onBookingStageComplete: (stage: string, data: any) => void;
 }
 
-const AIChatMessages: React.FC<AIChatMessagesProps> = ({ messages, isLoading, onBookFlight }) => {
+const AIChatMessages: React.FC<AIChatMessagesProps> = ({ 
+  messages, 
+  isLoading, 
+  onBookFlight,
+  onBookingStageComplete
+}) => {
+  const [bookingInput, setBookingInput] = useState("");
+  
+  const handleBookingInput = (stage: string) => {
+    if (!bookingInput.trim()) return;
+    
+    onBookingStageComplete(stage, bookingInput);
+    setBookingInput("");
+  };
+
   return (
     <div className="space-y-6">
       {messages.map((message, index) => (
@@ -117,6 +139,81 @@ const AIChatMessages: React.FC<AIChatMessagesProps> = ({ messages, isLoading, on
                         </div>
                       </div>
                     ))}
+                  </div>
+                )}
+                
+                {/* Booking flow UI */}
+                {message.booking && (
+                  <div className="mt-3">
+                    {message.booking.stage === 'passenger' && (
+                      <div className="bg-white border border-gray-200 rounded-xl p-4">
+                        <h4 className="text-sm font-semibold mb-2">Please enter passenger names</h4>
+                        <div className="flex gap-2">
+                          <Input 
+                            placeholder="First and Last Name" 
+                            value={bookingInput} 
+                            onChange={(e) => setBookingInput(e.target.value)} 
+                            className="flex-1"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleBookingInput('passenger');
+                              }
+                            }}
+                          />
+                          <Button onClick={() => handleBookingInput('passenger')}>
+                            <Check className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {message.booking.stage === 'contact' && (
+                      <div className="bg-white border border-gray-200 rounded-xl p-4">
+                        <h4 className="text-sm font-semibold mb-2">Please enter your contact information</h4>
+                        <div className="flex gap-2">
+                          <Input 
+                            placeholder="Email Address" 
+                            type="email"
+                            value={bookingInput} 
+                            onChange={(e) => setBookingInput(e.target.value)} 
+                            className="flex-1"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleBookingInput('contact');
+                              }
+                            }}
+                          />
+                          <Button onClick={() => handleBookingInput('contact')}>
+                            <Check className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {message.booking.stage === 'payment' && (
+                      <div className="bg-white border border-gray-200 rounded-xl p-4">
+                        <h4 className="text-sm font-semibold mb-2">Enter your payment information</h4>
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <CreditCard className="h-4 w-4 text-gray-500" />
+                            <Input 
+                              placeholder="Card Number" 
+                              value={bookingInput} 
+                              onChange={(e) => setBookingInput(e.target.value)} 
+                              className="flex-1"
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <Button 
+                              className="flex-1" 
+                              onClick={() => handleBookingInput('payment')}
+                            >
+                              Complete Payment
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

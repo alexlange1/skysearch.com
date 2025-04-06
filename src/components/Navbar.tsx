@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -13,8 +12,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Plane, Map, Hotel, Car, MessageCircle } from "lucide-react";
+import AuthDialog from './AuthDialog';
 
-// List of components in the menu
 const components: { title: string; href: string; description: string; icon: React.ReactNode }[] = [
   {
     title: "Flights",
@@ -48,7 +47,6 @@ const components: { title: string; href: string; description: string; icon: Reac
   },
 ];
 
-// Inline component for the navigation menu link
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
   React.ComponentPropsWithoutRef<"a"> & { title: React.ReactNode }
@@ -123,8 +121,13 @@ const Navbar = () => {
         </div>
         
         <div className="flex items-center gap-2">
-          <Button variant="outline">Sign In</Button>
-          <Button>Sign Up</Button>
+          <AuthDialog>
+            <Button variant="outline">Sign In</Button>
+          </AuthDialog>
+          
+          <AuthDialog defaultTab="signup">
+            <Button>Sign Up</Button>
+          </AuthDialog>
         </div>
       </div>
     </div>
