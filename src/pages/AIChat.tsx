@@ -74,12 +74,12 @@ const AIChat = () => {
                   <div
                     key={index}
                     onClick={() => handleSuggestedQuery(query)}
-                    className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="flex items-center p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
                   >
-                    <div className="text-blue-500">
+                    <div className="text-blue-500 mr-3">
                       <Lightbulb className="h-5 w-5" />
                     </div>
-                    <p>{query}</p>
+                    <p className="text-center flex-1">{query}</p>
                   </div>
                 ))}
               </div>
@@ -95,7 +95,7 @@ const AIChat = () => {
           <div className="border-t p-4 bg-white sticky bottom-0">
             <form onSubmit={handleSendMessage} className="flex gap-2 items-end">
               <Textarea 
-                placeholder="Ask about flights..."
+                placeholder={suggestedQueries[Math.floor(Math.random() * suggestedQueries.length)]}
                 className="min-h-[60px] flex-1 resize-none border-gray-200 focus:border-blue-400"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

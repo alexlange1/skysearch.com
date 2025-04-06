@@ -68,8 +68,8 @@ const CarRental = () => {
         <h2 className="text-2xl font-bold mb-6">Popular Car Types</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { name: "Economy", model: "Fiat Tipo", price: "from $25/day", image: "https://images.unsplash.com/photo-1621068793715-bc044b5a1cee?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
-            { name: "SUV", model: "BMW X5", price: "from $45/day", image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+            { name: "Economy", model: "Fiat Tipo", price: "from $25/day", image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+            { name: "SUV", model: "BMW X5", price: "from $45/day", image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
             { name: "Luxury", model: "Porsche 911", price: "from $85/day", image: "https://images.unsplash.com/photo-1580274455191-1c62238fa333?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
             { name: "Van", model: "Mercedes V Class", price: "from $65/day", image: "https://images.unsplash.com/photo-1543465077-db45d34b88a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
           ].map((car) => (

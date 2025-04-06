@@ -16,57 +16,50 @@ interface AIChatMessagesProps {
 
 const AIChatMessages: React.FC<AIChatMessagesProps> = ({ messages, isLoading }) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {messages.map((message, index) => (
         <div 
           key={index}
-          className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+          className="flex"
         >
-          <div 
-            className={`flex ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'} gap-3 max-w-[85%]`}
-          >
-            {message.type === 'user' ? (
-              <Avatar className="h-8 w-8 ring-2 ring-blue-100">
+          {message.type === 'user' ? (
+            <div className="flex flex-row-reverse w-full">
+              <Avatar className="h-8 w-8 ring-2 ring-blue-100 flex-shrink-0 ml-3">
                 <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
                   <User className="h-4 w-4" />
                 </AvatarFallback>
               </Avatar>
-            ) : (
-              <Avatar className="h-8 w-8 ring-2 ring-blue-100">
+              <div className="bg-blue-500 text-white rounded-2xl rounded-tr-sm py-3 px-4 max-w-[80%] ml-auto">
+                {message.content}
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-row w-full">
+              <Avatar className="h-8 w-8 ring-2 ring-blue-100 flex-shrink-0 mr-3">
                 <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
                   <Sparkles className="h-4 w-4" />
                 </AvatarFallback>
               </Avatar>
-            )}
-            
-            <div 
-              className={cn(
-                "rounded-2xl py-3 px-4 shadow-sm", 
-                message.type === 'user' 
-                  ? "bg-blue-500 text-white rounded-tr-sm" 
-                  : "bg-white text-gray-800 border border-gray-100 rounded-tl-sm"
-              )}
-            >
-              {message.content}
+              <div className="bg-white text-gray-800 border border-gray-100 rounded-2xl rounded-tl-sm py-3 px-4 max-w-[80%]">
+                {message.content}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       ))}
       
       {isLoading && (
-        <div className="flex justify-start">
-          <div className="flex flex-row gap-3 max-w-[85%]">
-            <Avatar className="h-8 w-8 ring-2 ring-blue-100">
-              <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-                <Sparkles className="h-4 w-4" />
-              </AvatarFallback>
-            </Avatar>
-            <div className="bg-white rounded-2xl py-3 px-4 shadow-sm border border-gray-100 rounded-tl-sm">
-              <div className="flex space-x-2">
-                <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse"></div>
-                <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-              </div>
+        <div className="flex flex-row w-full">
+          <Avatar className="h-8 w-8 ring-2 ring-blue-100 flex-shrink-0 mr-3">
+            <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+              <Sparkles className="h-4 w-4" />
+            </AvatarFallback>
+          </Avatar>
+          <div className="bg-white rounded-2xl rounded-tl-sm py-3 px-4 shadow-sm border border-gray-100 max-w-[80%]">
+            <div className="flex space-x-2">
+              <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse"></div>
+              <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+              <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
             </div>
           </div>
         </div>
