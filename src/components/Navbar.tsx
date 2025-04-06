@@ -24,19 +24,19 @@ const components: { title: string; href: string; description: string; icon: Reac
   },
   {
     title: "Hotels",
-    href: "#",
+    href: "/hotels",
     description: "Book your stay at the perfect place for your travels.",
     icon: <Hotel className="h-6 w-6 text-blue-500" />,
   },
   {
     title: "Car Rental",
-    href: "#",
+    href: "/car-rental",
     description: "Rent a car at the best prices for your destination.",
     icon: <Car className="h-6 w-6 text-blue-500" />,
   },
   {
     title: "Explore",
-    href: "#",
+    href: "/explore",
     description: "Discover new places and plan your next adventure.",
     icon: <Map className="h-6 w-6 text-blue-500" />,
   },
@@ -90,30 +90,26 @@ const Navbar = () => {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger>Travel Options</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {components.map((component) => (
-                      <ListItem
-                        key={component.title}
-                        title={
-                          <div className="flex items-center">
-                            {component.icon}
-                            <span className="ml-2">{component.title}</span>
-                          </div>
-                        }
-                        href={component.href}
-                      >
-                        {component.description}
-                      </ListItem>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
                 <Link to="/" className={navigationMenuTriggerStyle()}>
                   Flights
+                </Link>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <Link to="/hotels" className={navigationMenuTriggerStyle()}>
+                  Hotels
+                </Link>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <Link to="/car-rental" className={navigationMenuTriggerStyle()}>
+                  Car Rental
+                </Link>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <Link to="/explore" className={navigationMenuTriggerStyle()}>
+                  Explore
                 </Link>
               </NavigationMenuItem>
 

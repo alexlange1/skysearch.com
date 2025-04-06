@@ -1,8 +1,44 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { MapPin, Plane } from "lucide-react";
+import { MapPin, Plane, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+
+const BRAZIL_SLIDESHOW_IMAGES = [
+  {
+    url: "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    title: "Rio de Janeiro",
+    description: "Discover the vibrant city with its iconic Christ the Redeemer statue and beautiful beaches like Copacabana and Ipanema."
+  },
+  {
+    url: "https://images.unsplash.com/photo-1518639192441-8fce0a366e2e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80",
+    title: "Amazon Rainforest",
+    description: "Explore the world's largest tropical rainforest, home to the greatest variety of plants and animals on Earth."
+  },
+  {
+    url: "https://images.unsplash.com/photo-1518184117968-68b8229c2116?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    title: "Salvador",
+    description: "Experience the birthplace of Brazilian culture with colorful colonial architecture, vibrant music, and delicious cuisine."
+  },
+  {
+    url: "https://images.unsplash.com/photo-1531176125604-8e1e94bb0854?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    title: "Iguazu Falls",
+    description: "Witness one of the world's most spectacular waterfalls, spanning the border between Brazil and Argentina."
+  }
+];
 
 const CountrySpotlight = () => {
+  const [showBrazilSlideshow, setShowBrazilSlideshow] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % BRAZIL_SLIDESHOW_IMAGES.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + BRAZIL_SLIDESHOW_IMAGES.length) % BRAZIL_SLIDESHOW_IMAGES.length);
+  };
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="flex items-center mb-6">
@@ -41,13 +77,69 @@ const CountrySpotlight = () => {
             of incredible diversity and vibrant experiences.
           </p>
           <div>
-            <Button className="bg-flightblue hover:bg-flightblue-700 gap-2">
+            <Button 
+              className="bg-flightblue hover:bg-flightblue-700 gap-2"
+              onClick={() => setShowBrazilSlideshow(true)}
+            >
               <Plane className="h-4 w-4 rotate-45" />
               Explore Brazil
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Brazil Slideshow Dialog */}
+      <Dialog open={showBrazilSlideshow} onOpenChange={setShowBrazilSlideshow}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden">
+          <div className="relative h-[500px] bg-black">
+            {/* Close button */}
+            <button 
+              className="absolute right-4 top-4 z-50 bg-black/50 p-1 rounded-full text-white hover:bg-black/70"
+              onClick={() => setShowBrazilSlideshow(false)}
+            >
+              <X className="h-6 w-6" />
+            </button>
+            
+            {/* Navigation arrows */}
+            <button 
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-black/50 p-2 rounded-full text-white hover:bg-black/70"
+              onClick={prevSlide}
+            >
+              <ChevronLeft className="h-8 w-8" />
+            </button>
+            <button 
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-black/50 p-2 rounded-full text-white hover:bg-black/70"
+              onClick={nextSlide}
+            >
+              <ChevronRight className="h-8 w-8" />
+            </button>
+            
+            {/* Slide image */}
+            <img 
+              src={BRAZIL_SLIDESHOW_IMAGES[currentSlide].url}
+              alt={BRAZIL_SLIDESHOW_IMAGES[currentSlide].title}
+              className="w-full h-full object-cover"
+            />
+            
+            {/* Slide info overlay */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+              <h3 className="text-2xl font-bold mb-2">{BRAZIL_SLIDESHOW_IMAGES[currentSlide].title}</h3>
+              <p className="text-lg">{BRAZIL_SLIDESHOW_IMAGES[currentSlide].description}</p>
+              
+              {/* Dots indicator */}
+              <div className="flex justify-center space-x-2 mt-4">
+                {BRAZIL_SLIDESHOW_IMAGES.map((_, index) => (
+                  <button 
+                    key={index} 
+                    className={`w-3 h-3 rounded-full ${index === currentSlide ? 'bg-white' : 'bg-white/40'}`}
+                    onClick={() => setCurrentSlide(index)}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
