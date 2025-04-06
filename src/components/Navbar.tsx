@@ -112,19 +112,15 @@ const Navbar = () => {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link to="/" className={navigationMenuTriggerStyle()}>
-                    Flights
-                  </Link>
-                </NavigationMenuLink>
+                <Link to="/" className={navigationMenuTriggerStyle()}>
+                  Flights
+                </Link>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link to="/ai-chat" className={navigationMenuTriggerStyle()}>
-                    AI Chat
-                  </Link>
-                </NavigationMenuLink>
+                <Link to="/ai-chat" className={navigationMenuTriggerStyle()}>
+                  AI Chat
+                </Link>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
