@@ -46,18 +46,23 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
                         <Plane className="mr-2 text-blue-500" size={18} />
                         <span className="text-lg font-semibold">{flight.departureTime}</span>
                       </div>
-                      <div className="text-sm text-gray-500">{flight.departureAirport}</div>
+                      <div className="text-sm text-gray-500">{flight.departureAirport.split(' - ')[0]}</div>
                     </div>
                     
-                    <div className="flex flex-col items-center">
+                    <div className="flex flex-col items-center mx-2">
                       <div className="text-xs text-gray-500">Duration</div>
                       <div className="flex items-center">
                         <Clock className="mr-1 text-gray-400" size={16} />
-                        <span>{flight.duration}</span>
+                        <span className="font-medium">{flight.duration}</span>
                       </div>
                       <div className="w-24 h-0.5 bg-gray-300 relative my-1">
                         <div className="w-2 h-2 rounded-full bg-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
                       </div>
+                      {flight.stops > 0 && (
+                        <div className="text-xs text-orange-500">
+                          {flight.stops} stop{flight.stops > 1 ? 's' : ''}
+                        </div>
+                      )}
                     </div>
                     
                     <div className="text-center md:text-right mt-2 md:mt-0">
@@ -65,7 +70,7 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
                         <span className="text-lg font-semibold">{flight.arrivalTime}</span>
                         <Plane className="ml-2 text-blue-500 transform rotate-90" size={18} />
                       </div>
-                      <div className="text-sm text-gray-500">{flight.arrivalAirport}</div>
+                      <div className="text-sm text-gray-500">{flight.arrivalAirport.split(' - ')[0]}</div>
                     </div>
                   </div>
                   

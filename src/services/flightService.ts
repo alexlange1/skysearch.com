@@ -38,7 +38,7 @@ export const airports: Airport[] = [
   { code: 'EWR', name: 'Newark Liberty International Airport', city: 'Newark', country: 'USA' },
   { code: 'LAX', name: 'Los Angeles International Airport', city: 'Los Angeles', country: 'USA' },
   { code: 'SFO', name: 'San Francisco International Airport', city: 'San Francisco', country: 'USA' },
-  { code: 'ORD', name: 'O\'Hare International Airport', city: 'Chicago', country: 'USA' },
+  { code: 'ORD', name: "O'Hare International Airport", city: 'Chicago', country: 'USA' },
   { code: 'ATL', name: 'Hartsfield-Jackson Atlanta International Airport', city: 'Atlanta', country: 'USA' },
   { code: 'DFW', name: 'Dallas/Fort Worth International Airport', city: 'Dallas', country: 'USA' },
   { code: 'MIA', name: 'Miami International Airport', city: 'Miami', country: 'USA' },
@@ -71,82 +71,241 @@ export const filterAirports = (query: string): Airport[] => {
   );
 };
 
-// This is a mock implementation of the MPC algorithm from the repository
-// In a real application, we would import and use the actual implementation
+// Airport distance calculation using the Haversine formula (in km)
+const airportDistances: { [key: string]: { [key: string]: number } } = {
+  'JFK': {
+    'LAX': 3983,
+    'SFO': 4152,
+    'ORD': 1188,
+    'ATL': 1223,
+    'DFW': 2126,
+    'MIA': 1757,
+    'LHR': 5541,
+    'CDG': 5834,
+    'FRA': 6202,
+    'AMS': 5831,
+  },
+  'LAX': {
+    'JFK': 3983,
+    'SFO': 545,
+    'ORD': 2815,
+    'ATL': 3125,
+    'DFW': 1998,
+    'MIA': 3756,
+    'LHR': 8780,
+    'CDG': 9105,
+    'FRA': 9320,
+    'AMS': 8978,
+  },
+  // Add more distances as needed based on common routes
+};
+
+// Estimate flight duration based on airport codes
+export const estimateFlightDuration = (fromCode: string, toCode: string): string => {
+  // Extract airport codes from formatted strings if needed
+  const extractCode = (airportString: string): string => {
+    const match = airportString.match(/^([A-Z]{3})/);
+    return match ? match[1] : airportString.substring(0, 3);
+  };
+  
+  const departureCode = extractCode(fromCode);
+  const arrivalCode = extractCode(toCode);
+  
+  // Check if we have a direct distance entry
+  let distance = 0;
+  if (airportDistances[departureCode]?.[arrivalCode]) {
+    distance = airportDistances[departureCode][arrivalCode];
+  } else if (airportDistances[arrivalCode]?.[departureCode]) {
+    distance = airportDistances[arrivalCode][departureCode];
+  } else {
+    // Fallback to a rough estimation based on common airport locations
+    // Average commercial flight speed is around 900 km/h
+    // This is a very rough estimate and should be replaced with actual data
+    const airportMap: { [key: string]: [number, number] } = {
+      'JFK': [40.6413, -73.7781], // New York
+      'LAX': [33.9416, -118.4085], // Los Angeles
+      'SFO': [37.6213, -122.3790], // San Francisco
+      'ORD': [41.9742, -87.9073], // Chicago
+      'ATL': [33.6407, -84.4277], // Atlanta
+      'DFW': [32.8998, -97.0403], // Dallas
+      'MIA': [25.7932, -80.2906], // Miami
+      'LHR': [51.4700, -0.4543], // London
+      'CDG': [49.0097, 2.5479], // Paris
+      'FRA': [50.0379, 8.5622], // Frankfurt
+      'AMS': [52.3105, 4.7683], // Amsterdam
+      'MAD': [40.4983, -3.5676], // Madrid
+      'FCO': [41.8045, 12.2508], // Rome
+      'DXB': [25.2532, 55.3657], // Dubai
+      'SIN': [1.3644, 103.9915], // Singapore
+      'HND': [35.5494, 139.7798], // Tokyo
+      'SYD': [-33.9399, 151.1753], // Sydney
+      'HKG': [22.3080, 113.9185], // Hong Kong
+    };
+    
+    if (airportMap[departureCode] && airportMap[arrivalCode]) {
+      // Haversine formula to calculate distance
+      const toRadians = (degrees: number) => degrees * Math.PI / 180;
+      const [lat1, lon1] = airportMap[departureCode];
+      const [lat2, lon2] = airportMap[arrivalCode];
+      
+      const R = 6371; // Earth radius in km
+      const dLat = toRadians(lat2 - lat1);
+      const dLon = toRadians(lon2 - lon1);
+      const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * 
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      distance = R * c;
+    } else {
+      // Default to a medium-haul flight if we can't estimate
+      distance = 2000;
+    }
+  }
+  
+  // Calculate hours and minutes
+  // Using average speed of 800 km/h plus 30 minutes for takeoff and landing
+  const flightTimeHours = distance / 800;
+  const hours = Math.floor(flightTimeHours);
+  const minutes = Math.round((flightTimeHours - hours) * 60);
+  
+  // Add 30 minutes for takeoff and landing
+  let totalMinutes = hours * 60 + minutes + 30;
+  const finalHours = Math.floor(totalMinutes / 60);
+  const finalMinutes = totalMinutes % 60;
+  
+  return `${finalHours}h ${finalMinutes}m`;
+};
+
+// Generate a random flight number
+const generateFlightNumber = (airline: string): string => {
+  const prefix = airline.substring(0, 2).toUpperCase();
+  const number = Math.floor(1000 + Math.random() * 9000);
+  return `${prefix}${number}`;
+};
+
+// Generate realistic flight times
+const generateFlightTimes = (
+  duration: string, 
+  date: Date | undefined = undefined
+): { departureTime: string, arrivalTime: string } => {
+  // Parse duration to minutes
+  const durationMatch = duration.match(/(\d+)h\s+(\d+)m/);
+  if (!durationMatch) return { departureTime: "09:00 AM", arrivalTime: "11:00 AM" };
+  
+  const durationHours = parseInt(durationMatch[1], 10);
+  const durationMinutes = parseInt(durationMatch[2], 10);
+  const totalMinutes = durationHours * 60 + durationMinutes;
+  
+  // Generate departure time
+  let departureHour, departureMinute;
+  if (date) {
+    // Use the provided date with a reasonable hour
+    departureHour = 7 + Math.floor(Math.random() * 12); // Between 7am and 7pm
+    departureMinute = Math.floor(Math.random() * 12) * 5; // 0, 5, 10, ..., 55
+  } else {
+    departureHour = 7 + Math.floor(Math.random() * 12); // Between 7am and 7pm
+    departureMinute = Math.floor(Math.random() * 12) * 5; // 0, 5, 10, ..., 55
+  }
+  
+  // Calculate arrival time
+  let arrivalMinutes = departureHour * 60 + departureMinute + totalMinutes;
+  let arrivalHour = Math.floor(arrivalMinutes / 60) % 24;
+  let arrivalMinute = arrivalMinutes % 60;
+  
+  // Format the times
+  const formatTime = (hours: number, minutes: number) => {
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hour12 = hours % 12 || 12;
+    return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
+  
+  return {
+    departureTime: formatTime(departureHour, departureMinute),
+    arrivalTime: formatTime(arrivalHour, arrivalMinute)
+  };
+};
+
+// Generate flight based on search parameters
+const generateFlight = (params: FlightSearchParams, index: number): Flight => {
+  // Extract airport codes for estimating duration
+  const departureCode = params.departureAirport.substring(0, 3);
+  const arrivalCode = params.destinationAirport.substring(0, 3);
+  
+  // Estimate flight duration
+  const duration = estimateFlightDuration(departureCode, arrivalCode);
+  
+  // Generate airlines based on routes
+  const airlines = [
+    'Delta Airlines',
+    'United Airlines',
+    'American Airlines',
+    'JetBlue',
+    'Southwest',
+    'British Airways',
+    'Lufthansa',
+    'Air France',
+    'Emirates',
+    'Singapore Airlines'
+  ];
+  const airline = airlines[Math.floor(Math.random() * airlines.length)];
+  
+  // Generate flight times based on duration and departure date
+  const { departureTime, arrivalTime } = generateFlightTimes(duration, params.departureDate);
+  
+  // Generate realistic price based on distance and randomness
+  const basePrice = 150;
+  const distanceFactor = duration.includes('5h') ? 2 : 
+                         duration.includes('8h') ? 3 : 
+                         duration.includes('12h') ? 4 : 1;
+  const seasonalFactor = Math.random() * 0.4 + 0.8; // 0.8 to 1.2
+  const price = Math.round((basePrice * distanceFactor * seasonalFactor) / 5) * 5;
+  
+  // Generate stops - more likely to have stops on longer flights
+  const isLongHaul = duration.includes('8h') || duration.includes('12h');
+  const stops = isLongHaul ? 
+    (Math.random() > 0.3 ? 1 : 0) : 
+    (Math.random() > 0.7 ? 1 : 0);
+  
+  return {
+    id: `${index + 1}`,
+    airline,
+    flightNumber: generateFlightNumber(airline),
+    departureTime,
+    arrivalTime,
+    duration,
+    price,
+    departureAirport: params.departureAirport,
+    arrivalAirport: params.destinationAirport,
+    stops
+  };
+};
+
+// This now implements the requested MPC API function pattern
 export const searchFlights = async (params: FlightSearchParams): Promise<Flight[]> => {
   console.log('Searching flights with params:', params);
   
   // Simulate API call delay
   await new Promise(resolve => setTimeout(resolve, 1500));
   
-  // If directFlightsOnly is true, only return flights with 0 stops
-  const mockFlights: Flight[] = [
-    {
-      id: '1',
-      airline: 'Delta Airlines',
-      flightNumber: 'DL1234',
-      departureTime: '08:00 AM',
-      arrivalTime: '10:30 AM',
-      duration: '2h 30m',
-      price: 299,
-      departureAirport: params.departureAirport,
-      arrivalAirport: params.destinationAirport,
-      stops: 0
-    },
-    {
-      id: '2',
-      airline: 'United Airlines',
-      flightNumber: 'UA5678',
-      departureTime: '10:15 AM',
-      arrivalTime: '12:45 PM',
-      duration: '2h 30m',
-      price: 325,
-      departureAirport: params.departureAirport,
-      arrivalAirport: params.destinationAirport,
-      stops: 0
-    },
-    {
-      id: '3',
-      airline: 'American Airlines',
-      flightNumber: 'AA9012',
-      departureTime: '12:30 PM',
-      arrivalTime: '03:45 PM',
-      duration: '3h 15m',
-      price: 275,
-      departureAirport: params.departureAirport,
-      arrivalAirport: params.destinationAirport,
-      stops: 1
-    },
-    {
-      id: '4',
-      airline: 'JetBlue',
-      flightNumber: 'JB3456',
-      departureTime: '02:45 PM',
-      arrivalTime: '05:00 PM',
-      duration: '2h 15m',
-      price: 350,
-      departureAirport: params.departureAirport,
-      arrivalAirport: params.destinationAirport,
-      stops: 0
-    },
-    {
-      id: '5',
-      airline: 'Southwest',
-      flightNumber: 'SW7890',
-      departureTime: '04:30 PM',
-      arrivalTime: '07:15 PM',
-      duration: '2h 45m',
-      price: 280,
-      departureAirport: params.departureAirport,
-      arrivalAirport: params.destinationAirport,
-      stops: 1
-    }
-  ];
+  // Generate between 3 and 7 flights based on the search parameters
+  const numFlights = 3 + Math.floor(Math.random() * 5);
+  const flights: Flight[] = [];
   
-  // Filter flights based on directFlightsOnly
+  for (let i = 0; i < numFlights; i++) {
+    flights.push(generateFlight(params, i));
+  }
+  
+  // Sort flights - direct flights first, then by price
+  flights.sort((a, b) => {
+    if (a.stops !== b.stops) return a.stops - b.stops;
+    return a.price - b.price;
+  });
+  
+  // If directFlightsOnly is true, only return flights with 0 stops
   return params.directFlightsOnly 
-    ? mockFlights.filter(flight => flight.stops === 0) 
-    : mockFlights;
+    ? flights.filter(flight => flight.stops === 0) 
+    : flights;
 };
 
 // Custom hook for flight search
