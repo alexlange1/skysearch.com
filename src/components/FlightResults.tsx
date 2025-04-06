@@ -3,7 +3,7 @@ import React from 'react';
 import { Flight } from '@/services/flightService';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plane, Clock, Calendar } from "lucide-react";
+import { Plane, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface FlightResultsProps {
@@ -27,15 +27,6 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
   }
 
   const handleBookFlight = async (flight: Flight) => {
-    // Extract airport codes from the full airport strings
-    const extractAirportCode = (airportString: string): string => {
-      const match = airportString.match(/^([A-Z]{3})/);
-      return match ? match[1] : '';
-    };
-
-    const departureCode = extractAirportCode(flight.departureAirport);
-    const arrivalCode = extractAirportCode(flight.arrivalAirport);
-
     // Format departure and arrival times to ISO format required by API
     // For demo purposes, we'll use today's date with the time from the flight
     const formatTimeToISO = (timeString: string): string => {
@@ -59,14 +50,14 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
       parameters: {
         airline: flight.airline,
         flight_number: flight.flightNumber,
-        from: departureCode,
-        to: arrivalCode,
+        from: flight.departureAirportCode,
+        to: flight.arrivalAirportCode,
         departure_time: formatTimeToISO(flight.departureTime),
         arrival_time: formatTimeToISO(flight.arrivalTime),
+        duration: flight.durationInMinutes.toString(),
+        stops: flight.stops.toString(),
         price: flight.price.toString(),
-        currency: "USD",
-        duration: flight.duration,
-        stops: flight.stops === 0 ? "Direct" : `${flight.stops} Stop${flight.stops > 1 ? 's' : ''}`
+        currency: flight.currency || "USD"
       }
     };
 
@@ -77,7 +68,7 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
       // For now we'll simulate a successful booking
       toast({
         title: "Flight booked successfully!",
-        description: `Your ${flight.airline} flight from ${departureCode} to ${arrivalCode} has been booked.`,
+        description: `Your ${flight.airline} flight from ${flight.departureAirportCode} to ${flight.arrivalAirportCode} has been booked.`,
         variant: "default",
       });
     } catch (error) {
@@ -96,10 +87,11 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
         <h2 className="text-2xl font-bold mb-6">Flight Results</h2>
         <div className="space-y-4">
           {flights.map((flight) => (
-            <Card key={flight.id} className="overflow-hidden card-hover">
+            <Card key={flight.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <CardContent className="p-0">
                 <div className="flex flex-col md:flex-row">
-                  <div className="bg-blue-50 p-4 md:w-1/4 flex flex-col justify-center items-center border-r border-gray-200">
+                  {/* Airline and Flight Number Section */}
+                  <div className="bg-blue-50 p-4 md:w-1/4 flex flex-col justify-center items-center">
                     <div className="text-lg font-bold text-center">{flight.airline}</div>
                     <div className="text-sm text-gray-500">{flight.flightNumber}</div>
                     <Badge variant={flight.stops === 0 ? "outline" : "secondary"} className="mt-2">
@@ -107,28 +99,36 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
                     </Badge>
                   </div>
                   
-                  <div className="p-4 md:w-2/4 flex flex-col md:flex-row justify-between items-center">
+                  {/* Flight Details Section */}
+                  <div className="p-6 md:w-2/4 flex flex-col md:flex-row justify-between items-center">
+                    {/* Departure Info */}
                     <div className="text-center md:text-left mb-2 md:mb-0">
                       <div className="flex items-center">
-                        <Plane className="mr-2 text-blue-500" size={18} />
+                        <Plane className="mr-2 text-blue-500" size={20} />
                         <span className="text-lg font-semibold">{flight.departureTime}</span>
                       </div>
-                      <div className="text-sm text-gray-500">{flight.departureAirport.split(' - ')[0]}</div>
+                      <div className="text-sm font-medium">{flight.departureAirportCode}</div>
                     </div>
                     
-                    <div className="flex flex-col items-center mx-2">
-                      <div className="text-xs text-gray-500">Duration</div>
+                    {/* Duration */}
+                    <div className="flex flex-col items-center mx-4">
+                      <div className="text-xs text-gray-500 mb-1">Duration</div>
                       <div className="flex items-center">
                         <Clock className="mr-1 text-gray-400" size={16} />
                         <span className="font-medium">{flight.duration}</span>
                       </div>
-                      <div className="w-24 h-0.5 bg-gray-300 relative my-1">
+                      <div className="w-32 h-0.5 bg-gray-300 relative my-2">
                         {flight.stops === 0 ? (
                           <div className="w-2 h-2 rounded-full bg-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
                         ) : (
                           <>
-                            <div className="w-2 h-2 rounded-full bg-orange-500 absolute top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2"></div>
-                            <div className="w-2 h-2 rounded-full bg-orange-500 absolute top-1/2 left-3/4 transform -translate-x-1/2 -translate-y-1/2"></div>
+                            {Array.from({ length: flight.stops }).map((_, idx) => (
+                              <div 
+                                key={idx}
+                                className="w-2 h-2 rounded-full bg-orange-500 absolute top-1/2 transform -translate-y-1/2"
+                                style={{ left: `${(idx + 1) * 100 / (flight.stops + 1)}%` }}
+                              ></div>
+                            ))}
                           </>
                         )}
                       </div>
@@ -139,19 +139,23 @@ const FlightResults: React.FC<FlightResultsProps> = ({ flights, isLoading }) => 
                       )}
                     </div>
                     
+                    {/* Arrival Info */}
                     <div className="text-center md:text-right mt-2 md:mt-0">
                       <div className="flex items-center justify-end">
                         <span className="text-lg font-semibold">{flight.arrivalTime}</span>
-                        <Plane className="ml-2 text-blue-500 transform rotate-90" size={18} />
+                        <Plane className="ml-2 text-blue-500 transform rotate-90" size={20} />
                       </div>
-                      <div className="text-sm text-gray-500">{flight.arrivalAirport.split(' - ')[0]}</div>
+                      <div className="text-sm font-medium">{flight.arrivalAirportCode}</div>
                     </div>
                   </div>
                   
-                  <div className="bg-blue-50 p-4 md:w-1/4 flex flex-col justify-center items-center border-l border-gray-200">
-                    <div className="text-2xl font-bold text-blue-600">${flight.price}</div>
+                  {/* Price and Booking Section */}
+                  <div className="bg-blue-50 p-6 md:w-1/4 flex flex-col justify-center items-center">
+                    <div className="text-2xl font-bold text-blue-600">
+                      ${flight.price}
+                    </div>
                     <button 
-                      className="mt-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors"
+                      className="mt-3 w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-md font-medium transition-colors"
                       onClick={() => handleBookFlight(flight)}
                     >
                       Select
