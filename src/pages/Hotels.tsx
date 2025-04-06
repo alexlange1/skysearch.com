@@ -80,12 +80,39 @@ const Hotels = () => {
       <div className="container mx-auto px-4 py-12">
         <h2 className="text-2xl font-bold mb-6">Popular Destinations</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {["New York", "Paris", "Tokyo", "Dubai"].map((city) => (
-            <div key={city} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="h-48 bg-gray-200"></div>
+          {[
+            {
+              city: "New York",
+              image: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+              properties: "1,254"
+            },
+            {
+              city: "Paris",
+              image: "https://images.unsplash.com/photo-1493397212122-2b85dda8106b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+              properties: "987"
+            },
+            {
+              city: "Tokyo",
+              image: "https://images.unsplash.com/photo-1460574283810-2aab119d8511?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+              properties: "1,053"
+            },
+            {
+              city: "Dubai",
+              image: "https://images.unsplash.com/photo-1487252665478-49b61b47f302?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+              properties: "842"
+            }
+          ].map((destination) => (
+            <div key={destination.city} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="h-48 bg-gray-200 relative">
+                <img 
+                  src={destination.image} 
+                  alt={destination.city}
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <div className="p-4">
-                <h3 className="font-bold text-lg">{city}</h3>
-                <p className="text-sm text-gray-600 mt-1">1,254 properties</p>
+                <h3 className="font-bold text-lg">{destination.city}</h3>
+                <p className="text-sm text-gray-600 mt-1">{destination.properties} properties</p>
               </div>
             </div>
           ))}

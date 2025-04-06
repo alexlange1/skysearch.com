@@ -68,14 +68,18 @@ const CarRental = () => {
         <h2 className="text-2xl font-bold mb-6">Popular Car Types</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { name: "Economy", price: "from $25/day" },
-            { name: "SUV", price: "from $45/day" },
-            { name: "Luxury", price: "from $85/day" },
-            { name: "Van", price: "from $65/day" },
+            { name: "Economy", price: "from $25/day", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+            { name: "SUV", price: "from $45/day", image: "https://images.unsplash.com/photo-1465379944081-7f47de8d74ac?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+            { name: "Luxury", price: "from $85/day", image: "https://images.unsplash.com/photo-1487887235947-a955ef187fcc?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+            { name: "Van", price: "from $65/day", image: "https://images.unsplash.com/photo-1517022812141-23620dba5c23?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
           ].map((car) => (
             <div key={car.name} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="h-48 bg-gray-200 flex items-center justify-center">
-                <Car className="h-20 w-20 text-gray-400" />
+              <div className="h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
+                <img 
+                  src={car.image} 
+                  alt={car.name} 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="p-4">
                 <h3 className="font-bold text-lg">{car.name}</h3>

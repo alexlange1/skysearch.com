@@ -105,7 +105,7 @@ const AIChat = () => {
           <div className="border-t p-4 bg-white sticky bottom-0">
             <form onSubmit={handleSendMessage} className="flex gap-2 items-end">
               <Textarea 
-                placeholder="Ask about flights, destinations, or travel tips..."
+                placeholder="Find the cheapest flight from Chicago to Miami?"
                 className="min-h-[60px] flex-1 resize-none border-gray-200 focus:border-blue-400"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

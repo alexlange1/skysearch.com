@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MapPin, Plane, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const BRAZIL_SLIDESHOW_IMAGES = [
   {
@@ -16,12 +16,12 @@ const BRAZIL_SLIDESHOW_IMAGES = [
     description: "Explore the world's largest tropical rainforest, home to the greatest variety of plants and animals on Earth."
   },
   {
-    url: "https://images.unsplash.com/photo-1518184117968-68b8229c2116?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    url: "https://images.unsplash.com/photo-1466442929976-97f336a657be?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
     title: "Salvador",
     description: "Experience the birthplace of Brazilian culture with colorful colonial architecture, vibrant music, and delicious cuisine."
   },
   {
-    url: "https://images.unsplash.com/photo-1531176125604-8e1e94bb0854?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    url: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
     title: "Iguazu Falls",
     description: "Witness one of the world's most spectacular waterfalls, spanning the border between Brazil and Argentina."
   }
@@ -42,7 +42,7 @@ const CountrySpotlight = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="flex items-center mb-6">
-        <div className="h-10 w-1 bg-flightblue rounded mr-3"></div>
+        <div className="h-10 w-1 bg-blue-600 rounded mr-3"></div>
         <h2 className="text-3xl font-bold">Country spotlight</h2>
       </div>
       <p className="mb-8 text-gray-600 max-w-3xl">
@@ -64,11 +64,11 @@ const CountrySpotlight = () => {
           </div>
         </div>
         <div className="flex flex-col justify-center p-6 md:p-8">
-          <h3 className="text-3xl font-bold mb-3 text-flightblue">Explore Brazil</h3>
+          <h3 className="text-3xl font-bold mb-3 text-blue-600">Explore Brazil</h3>
           <div className="flex items-center mb-4">
-            <span className="bg-flightblue/10 text-flightblue px-3 py-1 rounded-full text-sm font-medium mr-2">Adventure</span>
-            <span className="bg-flightblue/10 text-flightblue px-3 py-1 rounded-full text-sm font-medium mr-2">Culture</span>
-            <span className="bg-flightblue/10 text-flightblue px-3 py-1 rounded-full text-sm font-medium">History</span>
+            <span className="bg-blue-600/10 text-blue-600 px-3 py-1 rounded-full text-sm font-medium mr-2">Adventure</span>
+            <span className="bg-blue-600/10 text-blue-600 px-3 py-1 rounded-full text-sm font-medium mr-2">Culture</span>
+            <span className="bg-blue-600/10 text-blue-600 px-3 py-1 rounded-full text-sm font-medium">History</span>
           </div>
           <p className="mb-6 text-gray-700">
             Buzzing nocturnal cities, architectural icons, and lush ecosystems. 
@@ -78,7 +78,7 @@ const CountrySpotlight = () => {
           </p>
           <div>
             <Button 
-              className="bg-flightblue hover:bg-flightblue-700 gap-2"
+              className="bg-blue-600 hover:bg-blue-700 gap-2"
               onClick={() => setShowBrazilSlideshow(true)}
             >
               <Plane className="h-4 w-4 rotate-45" />
