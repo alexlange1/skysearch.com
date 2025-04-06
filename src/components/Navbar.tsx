@@ -7,8 +7,9 @@ const Navbar = () => {
     <div className="bg-flightblue w-full">
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
-          <div className="text-white text-2xl font-bold">
-            FlightfulWander.com
+          <div className="text-white text-2xl font-bold flex items-center">
+            <Plane className="mr-2 h-6 w-6 rotate-45" />
+            Flightly.com
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="outline" className="text-white bg-transparent border-transparent hover:bg-flightblue-600">
