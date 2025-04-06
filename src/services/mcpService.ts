@@ -8,6 +8,7 @@ interface AutoCompleteResult {
 }
 
 interface FlightLeg {
+  id?: string; // Added id as optional property
   departure: string;
   arrival: string;
   durationInMinutes: number;
@@ -148,14 +149,12 @@ export const mcpFlightSearch = async (query: string): Promise<{ flights: Flight[
                     id: "flight1",
                     price: { amount: 165, currency: "USD" },
                     legs: [{
-                      id: "leg1",
                       departure: `2025-04-06T16:05:00`,
                       arrival: `2025-04-06T20:07:00`,
-                      duration: "4h 2m",
                       durationInMinutes: 242,
+                      stopCount: 0,
                       origin: { id: originData.skyId, name: origin },
                       destination: { id: destinationData.skyId, name: destination },
-                      stopCount: 0,
                       carriers: { marketing: [{ name: "Emirates" }] },
                       flightNumber: "EM2619"
                     }]
@@ -169,14 +168,12 @@ export const mcpFlightSearch = async (query: string): Promise<{ flights: Flight[
                     id: "flight2",
                     price: { amount: 150, currency: "USD" },
                     legs: [{
-                      id: "leg2",
                       departure: `2025-04-06T10:20:00`,
                       arrival: `2025-04-06T14:35:00`,
-                      duration: "4h 15m",
                       durationInMinutes: 255,
+                      stopCount: 0,
                       origin: { id: originData.skyId, name: origin },
                       destination: { id: destinationData.skyId, name: destination },
-                      stopCount: 0,
                       carriers: { marketing: [{ name: "American Airlines" }] },
                       flightNumber: "AA4580"
                     }]
@@ -190,14 +187,12 @@ export const mcpFlightSearch = async (query: string): Promise<{ flights: Flight[
                     id: "flight3",
                     price: { amount: 180, currency: "USD" },
                     legs: [{
-                      id: "leg3",
                       departure: `2025-04-06T07:15:00`,
                       arrival: `2025-04-06T13:42:00`,
-                      duration: "6h 27m",
                       durationInMinutes: 387,
+                      stopCount: 1,
                       origin: { id: originData.skyId, name: origin },
                       destination: { id: destinationData.skyId, name: destination },
-                      stopCount: 1,
                       carriers: { marketing: [{ name: "Emirates" }] },
                       flightNumber: "EM7606"
                     }]

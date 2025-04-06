@@ -51,7 +51,7 @@ const components: { title: string; href: string; description: string; icon: Reac
 // Inline component for the navigation menu link
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
+  React.ComponentPropsWithoutRef<"a"> & { title: React.ReactNode | string }
 >(({ className, title, children, ...props }, ref) => {
   return (
     <li>
