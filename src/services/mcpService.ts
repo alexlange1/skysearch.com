@@ -1,3 +1,4 @@
+
 import { Flight } from "./flightService";
 
 // Interface for city to airport ID response
@@ -8,7 +9,6 @@ interface AutoCompleteResult {
 }
 
 interface FlightLeg {
-  id?: string; // Added id as optional property
   departure: string;
   arrival: string;
   durationInMinutes: number;
@@ -135,8 +135,7 @@ export const mcpFlightSearch = async (query: string): Promise<{ flights: Flight[
     // Step 3: Search for flights
     const searchDate = date ? formatDate(date) : formatDate(new Date());
     
-    // For demo, we'll use mock data that mimics the structure from the Skyscanner API
-    // In a real implementation, you would use flightsOneWay from the MCP
+    // For demo, we'll use more realistic mock data to simulate the Skyscanner API response
     const mockFlightResponse: FlightSearchResponse = {
       data: {
         data: {
@@ -147,14 +146,14 @@ export const mcpFlightSearch = async (query: string): Promise<{ flights: Flight[
                 items: [
                   {
                     id: "flight1",
-                    price: { amount: 165, currency: "USD" },
+                    price: { amount: 165.50, currency: "USD" },
                     legs: [{
                       departure: `2025-04-06T16:05:00`,
                       arrival: `2025-04-06T20:07:00`,
                       durationInMinutes: 242,
                       stopCount: 0,
-                      origin: { id: originData.skyId, name: origin },
-                      destination: { id: destinationData.skyId, name: destination },
+                      origin: { id: originData.skyId, name: originData.name },
+                      destination: { id: destinationData.skyId, name: destinationData.name },
                       carriers: { marketing: [{ name: "Emirates" }] },
                       flightNumber: "EM2619"
                     }]
@@ -166,14 +165,14 @@ export const mcpFlightSearch = async (query: string): Promise<{ flights: Flight[
                 items: [
                   {
                     id: "flight2",
-                    price: { amount: 150, currency: "USD" },
+                    price: { amount: 149.99, currency: "USD" },
                     legs: [{
                       departure: `2025-04-06T10:20:00`,
                       arrival: `2025-04-06T14:35:00`,
                       durationInMinutes: 255,
                       stopCount: 0,
-                      origin: { id: originData.skyId, name: origin },
-                      destination: { id: destinationData.skyId, name: destination },
+                      origin: { id: originData.skyId, name: originData.name },
+                      destination: { id: destinationData.skyId, name: destinationData.name },
                       carriers: { marketing: [{ name: "American Airlines" }] },
                       flightNumber: "AA4580"
                     }]
@@ -185,16 +184,16 @@ export const mcpFlightSearch = async (query: string): Promise<{ flights: Flight[
                 items: [
                   {
                     id: "flight3",
-                    price: { amount: 180, currency: "USD" },
+                    price: { amount: 178.75, currency: "USD" },
                     legs: [{
                       departure: `2025-04-06T07:15:00`,
                       arrival: `2025-04-06T13:42:00`,
                       durationInMinutes: 387,
                       stopCount: 1,
-                      origin: { id: originData.skyId, name: origin },
-                      destination: { id: destinationData.skyId, name: destination },
-                      carriers: { marketing: [{ name: "Emirates" }] },
-                      flightNumber: "EM7606"
+                      origin: { id: originData.skyId, name: originData.name },
+                      destination: { id: destinationData.skyId, name: destinationData.name },
+                      carriers: { marketing: [{ name: "Delta" }] },
+                      flightNumber: "DL7606"
                     }]
                   }
                 ]
@@ -209,7 +208,7 @@ export const mcpFlightSearch = async (query: string): Promise<{ flights: Flight[
     const flightItems = mockFlightResponse.data.data.itineraries.buckets.flatMap(bucket => bucket.items);
     
     // Map to our Flight interface
-    const flights: Flight[] = flightItems.map((item, index) => {
+    const flights: Flight[] = flightItems.map((item) => {
       const leg = item.legs[0];
       
       return {
@@ -239,7 +238,7 @@ export const mcpFlightSearch = async (query: string): Promise<{ flights: Flight[
       const cheapestFlight = flights.reduce((prev, curr) => prev.price < curr.price ? prev : curr);
       const directFlights = flights.filter(f => f.stops === 0);
       
-      responseMessage += `The cheapest option is $${cheapestFlight.price} with ${cheapestFlight.airline}. `;
+      responseMessage += `The cheapest option is $${cheapestFlight.price.toFixed(2)} with ${cheapestFlight.airline}. `;
       
       if (directFlights.length > 0) {
         responseMessage += `There ${directFlights.length === 1 ? 'is' : 'are'} ${directFlights.length} direct flight${directFlights.length !== 1 ? 's' : ''} available. `;
@@ -262,27 +261,36 @@ export const mcpFlightSearch = async (query: string): Promise<{ flights: Flight[
 // Helper for auto-completing city names to airport IDs
 const flightsAutoComplete = async (query: string): Promise<AutoCompleteResult[]> => {
   // In a real implementation, this would call the MCP endpoint
-  // For demo, we'll return mock data
+  // For demo, we'll return more detailed mock data
   const mockResults: Record<string, AutoCompleteResult[]> = {
     "new york": [
-      { skyId: "JFK", entityId: "27544008", name: "New York John F. Kennedy" },
-      { skyId: "LGA", entityId: "27545305", name: "New York LaGuardia" }
+      { skyId: "JFK", entityId: "27544008", name: "New York John F. Kennedy (JFK)" },
+      { skyId: "LGA", entityId: "27545305", name: "New York LaGuardia (LGA)" }
     ],
     "london": [
-      { skyId: "LHR", entityId: "27543456", name: "London Heathrow" },
-      { skyId: "LGW", entityId: "27544056", name: "London Gatwick" }
+      { skyId: "LHR", entityId: "27543456", name: "London Heathrow (LHR)" },
+      { skyId: "LGW", entityId: "27544056", name: "London Gatwick (LGW)" }
     ],
     "paris": [
-      { skyId: "CDG", entityId: "27543404", name: "Paris Charles de Gaulle" },
-      { skyId: "ORY", entityId: "27544022", name: "Paris Orly" }
+      { skyId: "CDG", entityId: "27543404", name: "Paris Charles de Gaulle (CDG)" },
+      { skyId: "ORY", entityId: "27544022", name: "Paris Orly (ORY)" }
     ],
     "chicago": [
-      { skyId: "ORD", entityId: "27539734", name: "Chicago O'Hare" }
+      { skyId: "ORD", entityId: "27539734", name: "Chicago O'Hare (ORD)" }
     ],
     "san francisco": [
-      { skyId: "SFO", entityId: "27542331", name: "San Francisco International" }
+      { skyId: "SFO", entityId: "27542331", name: "San Francisco International (SFO)" }
+    ],
+    "los angeles": [
+      { skyId: "LAX", entityId: "27545022", name: "Los Angeles International (LAX)" }
+    ],
+    "miami": [
+      { skyId: "MIA", entityId: "27545212", name: "Miami International (MIA)" }
+    ],
+    "tokyo": [
+      { skyId: "NRT", entityId: "27542234", name: "Tokyo Narita (NRT)" },
+      { skyId: "HND", entityId: "27542324", name: "Tokyo Haneda (HND)" }
     ]
-    // Add more cities as needed
   };
   
   // Find a match in our mock data
@@ -298,7 +306,7 @@ const flightsAutoComplete = async (query: string): Promise<AutoCompleteResult[]>
     { 
       skyId: query.substring(0, 3).toUpperCase(), 
       entityId: "27540000", 
-      name: query.charAt(0).toUpperCase() + query.slice(1) + " Airport"
+      name: query.charAt(0).toUpperCase() + query.slice(1) + " Airport (" + query.substring(0, 3).toUpperCase() + ")"
     }
   ];
 };
