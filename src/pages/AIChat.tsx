@@ -1,9 +1,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import Navbar from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Plane, Send, Info, LightbulbIcon } from "lucide-react";
+import { Send, LightbulbIcon, Info } from "lucide-react";
 import AIChatMessages from "@/components/AIChatMessages";
 import FlightResults from "@/components/FlightResults";
 import { Flight } from '@/services/flightService';
@@ -89,74 +90,82 @@ const AIChat: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-8">
-      <Card className="shadow-lg border-0 overflow-hidden">
-        <CardContent className="p-0">
-          <div className="bg-blue-600 text-white p-4 flex items-center justify-between">
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      
+      <div className="flex-grow bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
-              <Plane className="mr-2" />
-              <h1 className="text-xl font-bold">AI Travel Assistant</h1>
+              <h1 className="text-2xl font-bold text-gray-900">AI Travel Assistant</h1>
+              <Button variant="ghost" size="icon" className="ml-2">
+                <Info className="h-4 w-4" />
+              </Button>
             </div>
-            <Button variant="ghost" size="icon" className="text-white">
-              <Info className="h-5 w-5" />
-            </Button>
+            <div className="text-sm text-blue-600 font-medium">Expert Flight Search</div>
           </div>
           
-          {messages.length === 0 ? (
-            <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
-              <h2 className="text-2xl font-bold mb-4 text-center">Ask me about flights</h2>
-              <p className="text-gray-500 mb-8 text-center max-w-lg">
-                Your AI-powered travel assistant is ready to search and book flights for you
-              </p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl">
-                {suggestionQueries.map((query, index) => (
-                  <Button 
-                    key={index} 
-                    variant="outline" 
-                    className="p-4 h-auto justify-start text-left flex items-start" 
-                    onClick={() => handleSuggestionClick(query)}
-                  >
-                    <LightbulbIcon className="mr-2 h-5 w-5 mt-0.5 text-blue-500" />
-                    <span>{query}</span>
-                  </Button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="p-4 overflow-auto max-h-[500px]">
-              <AIChatMessages messages={messages} isLoading={isLoading} />
-              <div ref={messagesEndRef} />
-              
-              {showFlightResults && flights.length > 0 && (
-                <div className="mt-4">
-                  <FlightResults flights={flights} isLoading={false} />
+          <Card className="shadow-md border border-gray-200 overflow-hidden bg-white rounded-xl">
+            <CardContent className="p-0">
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+                  <h2 className="text-3xl font-bold text-gray-800 mb-3">
+                    Ask me about flights
+                  </h2>
+                  <p className="text-gray-500 mb-10 max-w-xl">
+                    Your AI-powered travel assistant is ready to answer your questions and help you book flights
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl">
+                    {suggestionQueries.map((query, index) => (
+                      <Button 
+                        key={index} 
+                        variant="outline" 
+                        className="p-4 h-auto justify-start text-left flex items-start border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors" 
+                        onClick={() => handleSuggestionClick(query)}
+                      >
+                        <LightbulbIcon className="mr-3 h-5 w-5 mt-0.5 text-blue-500 flex-shrink-0" />
+                        <span>{query}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="px-4 py-6 overflow-auto max-h-[500px] bg-gray-50">
+                  <AIChatMessages messages={messages} isLoading={isLoading} />
+                  <div ref={messagesEndRef} />
+                  
+                  {showFlightResults && flights.length > 0 && (
+                    <div className="mt-6">
+                      <FlightResults flights={flights} isLoading={false} />
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          )}
-          
-          <div className="border-t p-4">
-            <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-              <Textarea
-                placeholder="Ask about flights..."
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                className="min-h-[60px] resize-none"
-                disabled={isLoading}
-              />
-              <Button 
-                type="submit" 
-                size="icon" 
-                className="h-[60px] w-[60px] bg-blue-600 hover:bg-blue-700"
-                disabled={!inputValue.trim() || isLoading}
-              >
-                <Send className="h-5 w-5" />
-              </Button>
-            </form>
-          </div>
-        </CardContent>
-      </Card>
+              
+              <div className="border-t p-4 bg-white">
+                <form onSubmit={handleSendMessage} className="flex items-center gap-3">
+                  <Textarea
+                    placeholder="Ask about flights..."
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    className="min-h-[56px] resize-none rounded-xl border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                    disabled={isLoading}
+                  />
+                  <Button 
+                    type="submit" 
+                    size="icon" 
+                    className="h-[56px] w-[56px] rounded-full bg-blue-600 hover:bg-blue-700 flex-shrink-0"
+                    disabled={!inputValue.trim() || isLoading}
+                  >
+                    <Send className="h-5 w-5" />
+                  </Button>
+                </form>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };
